@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+:root {
+  background-color: white;
+  font-family: "Nunito Sans", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.job-textarea {
+  font-family: inherit;
+  line-height: 1.6;
+  padding-left: 1.5rem;
+  background-image: radial-gradient(currentColor 1px, transparent 1.5px);
+  background-position: 0.5rem 1.1rem;
+  background-repeat: repeat-y;
+  background-size: 1rem 1.6em;
+}
+
+/* 🌊 Custom Scrollbar Style */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 8px;                /* Lebar scrollbar */
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;   /* Track (jalur) transparan */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #01777F; /* Warna utama scrollbar */
+  border-radius: 9999px;     /* Biar smooth rounded */
+  border: 2px solid transparent;
+  background-clip: content-box; /* Memberi efek tepi lembut */
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #026a70; /* Warna sedikit lebih gelap saat hover */
+}
+
+::-webkit-scrollbar {
+  width: 14px;               /* 👉 Lebar scrollbar vertikal */
+  height: 14px;              /* 👉 Tinggi scrollbar horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;       /* Warna background track scrollbar */
+  border-radius: 9999px;     /* Rounded halus */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #01777F; /* Warna utama scrollbar */
+  border-radius: 9999px;     /* Rounded penuh */
+  border: 10px solid #f5f5f5; /* Tambahkan jarak visual di tepi */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #01666e; /* Warna lebih gelap saat hover */
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: auto;                /* Bisa 'thin' atau 'auto' */
+  scrollbar-color: #01777F #f5f5f5;     /* thumb color + track color */
+}

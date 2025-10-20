@@ -1,0 +1,26 @@
+input[type="radio"] {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="radio"]:checked {
+  border-color: #01959F;
+}
+
+input[type="radio"]:checked::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: #01959F;
+}
