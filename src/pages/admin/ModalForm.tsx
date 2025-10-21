@@ -18,11 +18,11 @@ import type { DbRequirementsField } from '../../types';
 import { jobValidationSchema } from './utils';
 
 const jobTypeOptions = [
-  { value: 'full-time', label: 'Full-time' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'part-time', label: 'Part-time' },
-  { value: 'internship', label: 'Internship' },
-  { value: 'freelance', label: 'Freelance' },
+  { value: 'Full-Time', label: 'Full-Time' },
+  { value: 'Contract', label: 'Contract' },
+  { value: 'Part-Time', label: 'Part-Time' },
+  { value: 'Internship', label: 'Internship' },
+  { value: 'Freelance', label: 'Freelance' },
 ];
 
 const disabledRequirementKeys = ['fullName', 'photoProfile', 'email'];

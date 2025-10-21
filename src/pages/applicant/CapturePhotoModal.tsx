@@ -147,15 +147,15 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
 
   const drawPoseLabel = (
     ctx: CanvasRenderingContext2D,
-    poseNumber: number,
+    poseNumber: number = 0,
     boxX: number,
     boxY: number,
   ) => {
-    const labelText = `Pose ${poseNumber}`;
+    console.log(poseNumber);
+    const labelText = poseNumber < 1 ? "Undetected" : `Pose ${poseNumber}`;
     const paddingX = 12;
     const paddingY = 6;
     const fontSize = 20;
-    const offsetFromBox = 8;
 
     ctx.font = `bold ${fontSize}px Arial, sans-serif`;
     ctx.textAlign = "left";
@@ -167,14 +167,14 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
 
     // posisi label: sedikit di atas kiri bounding box
     const labelX = boxX;
-    const labelY = boxY - labelHeight - offsetFromBox;
+    const labelY = boxY - labelHeight;
 
     // background label
-    ctx.fillStyle = "#008343"; // hijau tua
+    ctx.fillStyle = poseNumber < 1 ? "#E11428" : "#008343";
     ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
 
     // border putih di luar
-    ctx.strokeStyle = "#008343";
+    ctx.strokeStyle = poseNumber < 1 ? "#E11428" : "#008343";
     ctx.lineWidth = 2;
     ctx.strokeRect(labelX, labelY, labelWidth, labelHeight);
 
@@ -218,11 +218,11 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
         const boxW = (maxX - minX + 2 * padding) * canvas.width;
         const boxH = (maxY - minY + 2 * padding) * canvas.height;
 
-        ctx.strokeStyle = "#008343";
+        ctx.strokeStyle = count < 1 ? "#E11428" : "#008343";
         ctx.lineWidth = 4;
         ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-        if (count > 0 && count < 4) {
+        if (count < 4) {
           ctx.save();
           ctx.scale(-1, 1);
           drawPoseLabel(ctx, count, -boxX - boxW, boxY);
@@ -356,13 +356,21 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
             <div className="flex justify-center mt-6 mb-6 space-x-4">
               <button
                 onClick={handleRetake}
-                className="py-1 px-4 border border-gray-300 text-black rounded-lg font-bold cursor-pointer"
+                className="
+                py-2 px-5 text-sm font-semibold rounded-lg border border-gray-300 text-gray-800 
+                bg-white shadow-md hover:shadow-lg transition-all duration-200 
+                hover:bg-gray-50 active:scale-[0.98] cursor-pointer
+              "
               >
                 Retake photo
               </button>
               <button
                 onClick={handleSubmit}
-                className="py-1 px-4 bg-teal-600 text-white rounded-lg font-bold cursor-pointer"
+                className="
+                py-2 px-5 text-sm font-semibold rounded-lg text-white bg-teal-600 
+                shadow-md hover:shadow-lg transition-all duration-200 
+                hover:bg-teal-700 active:scale-[0.98] cursor-pointer
+              "
               >
                 Submit
               </button>

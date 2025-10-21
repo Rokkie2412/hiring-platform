@@ -13,13 +13,13 @@ import type { Job } from "../../types";
 import type { CardJobProps, ContentProps, SelectedJobContentProps } from "./types";
 
 const TopBar = (): React.ReactElement => (
-  <header className="fixed top-0 left-0 w-full bg-white shadow-sm border-b border-gray-200 flex justify-between items-center px-4 sm:px-8 h-14 sm:h-16 z-50">
+  <header className="fixed top-0 left-0 w-full bg-white shadow-sm border-b border-gray-200 flex justify-between items-center px-4 sm:px-8 h-13 sm:h-16 z-50">
     <div className="flex items-center">
-      <h1 className="text-lg sm:text-xl font-semibold text-gray-700 tracking-wide">JobList</h1>
+      <h1 className="text-lg sm:text-xl font-bold text-gray-700 tracking-wide">JobList</h1>
     </div>
     <div className="flex items-center gap-4 sm:gap-6">
       <div className="hidden sm:block h-6 border-l border-gray-300" />
-      <img src={applicantAvatar} alt="User Avatar" className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-gray-300 object-cover" />
+      <img src={applicantAvatar} alt="User Avatar" className="w-7 h-7 sm:w-10 sm:h-10 rounded-full border border-gray-300 object-cover" />
     </div>
   </header>
 );
@@ -104,7 +104,9 @@ const Content = ({ jobs, selectedJob, onSelectJob, navigate }: ContentProps): Re
     <div className="flex flex-col sm:flex-row w-full gap-4 sm:h-[calc(100vh-3rem)] transition-all duration-200 mt-14">
       <div className="w-full sm:w-1/3 overflow-y-auto pr-4 scrollbar-gutter-stable h-[50vh] sm:h-auto">
         {jobs.map((job: Job) => (
-          <CardJob key={job.id} job={job} selectedJob={selectedJob} onSelect={handleSelect} />
+          job.status === "Active" ? (
+            <CardJob key={job.id} job={job} selectedJob={selectedJob} onSelect={handleSelect} />
+          ) : null
         ))}
       </div>
       <div className="w-full sm:w-2/3">
