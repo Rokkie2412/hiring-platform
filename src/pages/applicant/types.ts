@@ -19,7 +19,7 @@ export type ContentProps =  {
   navigate: NavigateFunction;
 }
 
-export type FormikValues = {
+export type ApplicationForm = {
   full_name: string;
   photo_profile: string;
   gender: string;

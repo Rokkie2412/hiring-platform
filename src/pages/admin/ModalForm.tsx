@@ -114,7 +114,6 @@ const ModalForm = () => {
     validateOnChange: false,
     onSubmit: async (values) => {
       const field = mappingRequirement(values);
-      console.log('📤 Field data:', field);
       await insertJobForm(values, 'Active', field, navigate)();
     },
   });

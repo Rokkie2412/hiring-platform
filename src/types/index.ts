@@ -1,4 +1,5 @@
 import type { JobFormValues } from "../pages/admin/types";
+import type { ApplicationForm } from "../pages/applicant/types";
 
 export type Job = {
   id: string,
@@ -48,6 +49,8 @@ export type JobFieldKey =
   };
 
 export type JobStore = {
+  photoTemp: string,
+  setPhotoTemp: (photo: string) => void,
   jobs: Job[],
   loading: boolean,
   error: string | null,
@@ -56,7 +59,8 @@ export type JobStore = {
   fetchJobs: () => Promise<void>,
   insertJob: (value: JobFormValues, jobStatus: string, fieldDb: DbRequirementsField[]) => Promise<null | undefined>,
   setSelectedJob: (job: Job | null) => void,
-  fetchApplicationForm: (selectedJob: Job) => Promise<void>
+  fetchApplicationForm: (selectedJob: Job) => Promise<void>,
+  insertApplicants: (values: ApplicationForm, photoTemp: string, selectedJobId: string) => Promise<void>
 }
 
 export type RequirementOption = "mandatory" | "optional" | "off";
@@ -89,3 +93,35 @@ export type RequirementsForm = {
   dob: RequirementOption;
 }
 
+export interface ApplicantProfile {
+  full_name: {
+    label: 'Full Name';
+    value: string;
+    order: 1;
+  };
+  email: {
+    label: 'Email';
+    value: string;
+    order: 2;
+  };
+  phone: {
+    label: 'Phone';
+    value: string;
+    order: 3;
+  };
+  domicile: {
+    label: 'Domicile';
+    value: string;
+    order: 4;
+  };
+  gender: {
+    label: 'Gender';
+    value: 'Female' | 'Male' | string; // sesuaikan jika perlu strict
+    order: 5;
+  };
+  linkedin_link: {
+    label: 'LinkedIn';
+    value: string; // URL string
+    order: 6;
+  };
+}

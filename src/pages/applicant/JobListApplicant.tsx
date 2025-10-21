@@ -63,7 +63,6 @@ const SelectedJobContent = ({ selectedJob, navigate }: SelectedJobContentProps):
             {selectedJob.jobs_type}
           </p>
           <button onClick={() => {
-            console.log(selectedJob)
             navigate(`/application-form`)
           }} className="cursor-pointer flex text-center items-center justify-center font-bold text-white bg-yellow-500 px-4 py-1 rounded-lg">
             Apply

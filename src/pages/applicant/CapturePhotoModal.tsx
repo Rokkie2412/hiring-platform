@@ -1,6 +1,11 @@
-import React, { useRef, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
-import closeIcon from '../../assets/close.png'
+import closeIcon from '../../assets/close.png';
+import pose1 from '../../assets/pose1.png';
+import pose2 from '../../assets/pose2.png';
+import chevron from '../../assets/chevron.png'
+import pose3 from '../../assets/pose3.png';
+import { useJobStore } from "../../store/jobStore"; // Import Zustand store
 
 const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => {
   const webcamRef = useRef<Webcam>(null);
@@ -9,12 +14,19 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
   const [countdown, setCountdown] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
-  const [isHandsReady, setIsHandsReady] = useState(false);
   const handsRef = useRef<any>(null);
+  const cameraRef = useRef<any>(null);
   const lastCaptureTimeRef = useRef(0);
+  const [isHandsReady, setIsHandsReady] = useState(false);
+
+  // Mengambil fungsi setPhotoTemp dari Zustand store
+  const { setPhotoTemp } = useJobStore();
+
+  // 新增状态来存储捕获的图片和预览状态
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const addDebug = (msg: string) => {
-    console.log(msg);
     setDebugInfo(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${msg}`]);
   };
 
@@ -23,11 +35,33 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
     loadAllScripts();
 
     return () => {
+      // Cleanup function to stop camera and hands when component unmounts
+      stopCamera();
       if (handsRef.current) {
         handsRef.current.close();
       }
     };
   }, []);
+
+  // New function to stop the camera
+  const stopCamera = useCallback(() => {
+    if (cameraRef.current) {
+      addDebug("Stopping camera...");
+      try {
+        cameraRef.current.stop();
+        cameraRef.current = null;
+        addDebug("✓ Camera stopped successfully!");
+      } catch (error) {
+        addDebug(`ERROR stopping camera: ${error}`);
+      }
+    }
+  }, []);
+
+  // Function to handle modal close
+  const handleClose = useCallback(() => {
+    stopCamera();
+    setter(false);
+  }, [setter, stopCamera]);
 
   const loadAllScripts = () => {
     addDebug("Starting script load...");
@@ -69,71 +103,107 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
   const initHands = () => {
     const w = window as any;
     addDebug(`Checking window.Hands: ${typeof w.Hands}`);
-    if (typeof w.Hands === 'undefined') { addDebug("Hands not found, retrying in 1s..."); setTimeout(initHands, 1000); return; }
+    if (typeof w.Hands === 'undefined') {
+      addDebug("Hands not found, retrying in 1s...");
+      setTimeout(initHands, 1000);
+      return;
+    }
+
     try {
       addDebug("Creating Hands instance...");
-      const hands = new w.Hands({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}` });
+      const hands = new w.Hands({
+        locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
+      });
+
       addDebug("Setting options...");
-      hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      hands.setOptions({
+        maxNumHands: 2,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
       addDebug("Setting onResults callback...");
       hands.onResults((results: any) => { handleResults(results); });
+
       handsRef.current = hands;
       setIsHandsReady(true);
       setIsLoading(false);
       addDebug("✓ Hands initialized successfully!");
+
       setTimeout(() => { startCamera(); }, 500);
-    } catch (error) { addDebug(`ERROR initializing: ${error}`); }
+    } catch (error) {
+      addDebug(`ERROR initializing: ${error}`);
+    }
   };
 
   const startCamera = async () => {
     addDebug("Starting camera...");
     const w = window as any;
-    if (!w.Camera || !handsRef.current || !webcamRef.current?.video) { addDebug("Camera utils not ready, retrying..."); setTimeout(startCamera, 500); return; }
+
+    if (!w.Camera || !handsRef.current || !webcamRef.current?.video) {
+      addDebug("Camera utils not ready, retrying...");
+      setTimeout(startCamera, 500);
+      return;
+    }
+
     try {
       const videoElement = webcamRef.current.video;
       addDebug(`Video element ready: ${videoElement.readyState}`);
-      const camera = new w.Camera(videoElement, { onFrame: async () => { if (handsRef.current && videoElement.readyState === 4) { await handsRef.current.send({ image: videoElement }); } }, width: 1280, height: 720 });
+
+      const camera = new w.Camera(videoElement, {
+        onFrame: async () => {
+          // 只有在不显示预览时才处理手部识别
+          if (!showPreview && handsRef.current && videoElement.readyState === 4) {
+            await handsRef.current.send({ image: videoElement });
+          }
+        },
+        width: 1280,
+        height: 720
+      });
+
+      cameraRef.current = camera;
       addDebug("Starting camera stream...");
       await camera.start();
       addDebug("✓ Camera started!");
-    } catch (error) { addDebug(`ERROR starting camera: ${error}`); }
+    } catch (error) {
+      addDebug(`ERROR starting camera: ${error}`);
+    }
   };
 
   // --- FUNGSI BARU UNTUK MENGGAMBAR LABEL POSE ---
   const drawPoseLabel = (ctx: CanvasRenderingContext2D, poseNumber: number, boxX: number, boxY: number) => {
     const labelText = `Pose ${poseNumber}`;
-    const padding = 12; // Padding dalam label
+    const padding = 12;
     const fontSize = 30;
-    const offsetFromBox = 10; // Jarak dari kotak ke label
+    const offsetFromBox = 10;
 
     ctx.font = `bold ${fontSize}px Arial, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Ukur teks untuk mendapatkan lebar
     const textMetrics = ctx.measureText(labelText);
     const labelWidth = textMetrics.width + padding * 2;
     const labelHeight = fontSize + padding;
 
-    // Hitung posisi label
-    const labelX = boxX; // Sejajarkan dengan tepi kiri kotak
+    const labelX = boxX;
     const labelY = boxY - offsetFromBox - labelHeight;
 
-    // Gambar latar belakang label
-    ctx.fillStyle = '#00A651'; // Warna hijau yang mirip dengan gambar
+    ctx.fillStyle = '#00A651';
     ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
 
-    // Gambar border label
     ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 3;
     ctx.strokeRect(labelX, labelY, labelWidth, labelHeight);
 
-    // Gambar teks
     ctx.fillStyle = '#FFFFFF';
     ctx.fillText(labelText, labelX + labelWidth / 2, labelY + labelHeight / 2);
   };
 
   const handleResults = (results: any) => {
+    // 如果正在显示预览，不处理结果
+    if (showPreview) return;
+
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -152,33 +222,43 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
 
       const w = window as any;
       for (const landmarks of results.multiHandLandmarks) {
-        // --- MODIFIKASI: Hitung koordinat kotak di sini ---
         let minX = 1, minY = 1, maxX = 0, maxY = 0;
-        for (const landmark of landmarks) { minX = Math.min(minX, landmark.x); minY = Math.min(minY, landmark.y); maxX = Math.max(maxX, landmark.x); maxY = Math.max(maxY, landmark.y); }
-        const width = maxX - minX; const height = maxY - minY;
+        for (const landmark of landmarks) {
+          minX = Math.min(minX, landmark.x);
+          minY = Math.min(minY, landmark.y);
+          maxX = Math.max(maxX, landmark.x);
+          maxY = Math.max(maxY, landmark.y);
+        }
+
+        const width = maxX - minX;
+        const height = maxY - minY;
         const padding = 0.025;
         const boxX = (minX - padding) * canvas.width;
         const boxY = (minY - padding) * canvas.height;
         const boxW = (width + 2 * padding) * canvas.width;
         const boxH = (height + 2 * padding) * canvas.height;
 
-        // Gambar kotak pembatas
         ctx.strokeStyle = '#00FF00';
         ctx.lineWidth = 5;
         ctx.strokeRect(boxX, boxY, boxW, boxH);
 
-        // --- GAMBAR LABEL POSE DI SINI ---
         if (count > 0 && count < 4) {
           drawPoseLabel(ctx, count, boxX, boxY);
         }
 
-        // Gambar landmark dan koneksi
-        if (w.drawConnectors && w.HAND_CONNECTIONS) { w.drawConnectors(ctx, landmarks, w.HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 }); }
-        if (w.drawLandmarks) { w.drawLandmarks(ctx, landmarks, { color: '#FF0000', lineWidth: 2, radius: 6 }); }
+        if (w.drawConnectors && w.HAND_CONNECTIONS) {
+          w.drawConnectors(ctx, landmarks, w.HAND_CONNECTIONS, { color: '#00FF00', lineWidth: 5 });
+        }
+        if (w.drawLandmarks) {
+          w.drawLandmarks(ctx, landmarks, { color: '#FF0000', lineWidth: 2, radius: 6 });
+        }
       }
 
       const now = Date.now();
-      if (count === 3 && !countdown && now - lastCaptureTimeRef.current > 4000) { startCountdown(); lastCaptureTimeRef.current = now; }
+      if (count === 3 && !countdown && now - lastCaptureTimeRef.current > 4000) {
+        startCountdown();
+        lastCaptureTimeRef.current = now;
+      }
     } else {
       setFingerCount(0);
     }
@@ -195,8 +275,58 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
     return count;
   };
 
-  const startCountdown = () => { let count = 3; setCountdown(count); const interval = setInterval(() => { count--; if (count > 0) { setCountdown(count); } else { setCountdown(null); clearInterval(interval); capture(); } }, 1000); };
-  const capture = useCallback(() => { const imageSrc = webcamRef.current?.getScreenshot(); console.log("Captured image:", imageSrc); addDebug("📸 Photo captured!"); }, []);
+  const startCountdown = () => {
+    let count = 3;
+    setCountdown(count);
+    const interval = setInterval(() => {
+      count--;
+      if (count > 0) {
+        setCountdown(count);
+      } else {
+        setCountdown(null);
+        clearInterval(interval);
+        capture();
+      }
+    }, 1000);
+  };
+
+  // 修改capture函数，捕获图片并显示预览
+  const capture = useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (imageSrc) {
+      setCapturedImage(imageSrc);
+      setShowPreview(true);
+      addDebug("📸 Photo captured!");
+    }
+  }, []);
+
+  // 处理重新拍照 - 修复问题
+  const handleRetake = useCallback(() => {
+    addDebug("Retaking photo...");
+    setCapturedImage(null);
+    setShowPreview(false);
+    setCountdown(null);
+    setFingerCount(0);
+
+    // 先停止相机
+    stopCamera();
+
+    // 等待一小段时间后重新启动相机
+    setTimeout(() => {
+      addDebug("Restarting camera after retake...");
+      startCamera();
+    }, 500);
+  }, [stopCamera]);
+
+  const handleSubmit = useCallback(() => {
+    if (capturedImage) {
+      setPhotoTemp(capturedImage);
+      addDebug("✓ Photo saved to store!");
+
+      // Tutup modal
+      setter(false);
+    }
+  }, [capturedImage, setter, setPhotoTemp]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -204,10 +334,9 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
         <header className="flex flex-row justify-between p-6 border-b flex-shrink-0">
           <div className="flex flex-col items-start text-black">
             <p className="font-bold text-lg">Raise Your Hand to Capture</p>
-            <p className="text-xs">Show 3 fingers to trigger auto-capture</p>
-            {isHandsReady && <span className="text-green-600 text-xs mt-1">✓ Hand detection ready</span>}
+            <p className="text-xs">We'll take the photo once your hand pose is detected.</p>
           </div>
-          <img className='cursor-pointer w-6 h-6' src={closeIcon} alt="Close" onClick={() => setter(false)} />
+          <img className='cursor-pointer w-6 h-6' src={closeIcon} alt="Close" onClick={handleClose} />
         </header>
 
         <div className="w-full px-6 py-4 relative overflow-auto flex-1">
@@ -221,20 +350,58 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
             </div>
           )}
 
+          {/* 显示摄像头或预览图片 */}
           <div className="relative bg-black rounded-lg overflow-hidden">
-            <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full" mirrored={true} />
-            <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ transform: 'scaleX(-1)' }} />
+            {!showPreview ? (
+              <>
+                <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="w-full" mirrored={true} />
+                <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full pointer-events-none" style={{ transform: 'scaleX(-1)' }} />
+              </>
+            ) : (
+              <img src={capturedImage || ''} alt="Captured" className="w-full h-full object-contain" />
+            )}
 
-            {/* LABEL POSE LAMA SUDAH DIHAPUS KARENA SEKARANG DIGAMBAR DI KANVAS */}
-
-            {countdown && (<div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10"><div className="text-[200px] font-bold text-white animate-pulse">{countdown}</div></div>)}
-            <div className="absolute top-4 left-4 bg-black/90 backdrop-blur-sm rounded-lg px-5 py-3 border-2 border-yellow-400"><p className="text-white text-lg font-bold">Fingers: <span className="text-4xl text-yellow-300 ml-2">{fingerCount}</span></p></div>
-            {fingerCount === 3 && !countdown && (<div className="absolute top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-full text-lg font-bold animate-pulse shadow-lg">✓ READY!</div>)}
+            {countdown && !showPreview && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60 z-10">
+                <div className="text-[200px] font-bold text-white animate-pulse">{countdown}</div>
+              </div>
+            )}
+            {fingerCount === 3 && !countdown && !showPreview && (
+              <div className="absolute top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-full text-lg font-bold animate-pulse shadow-lg">✓ READY!</div>
+            )}
           </div>
 
-          <button onClick={capture} className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-all text-lg">📸 Manual Capture</button>
-          <div className="mt-4 bg-blue-50 rounded-lg p-4 border-2 border-blue-300"><h3 className="font-bold mb-2 text-blue-900">💡 Tips:</h3><ul className="text-blue-700 text-sm space-y-1"><li>✋ Show your palm clearly to the camera</li><li>🖐️ Make sure lighting is good</li><li>3️⃣ Raise index, middle, and ring fingers</li><li>⏱️ Hold steady for 3 seconds</li></ul></div>
-          <div className="mt-3 bg-gray-100 rounded p-3 text-xs font-mono max-h-32 overflow-auto"><div className="font-bold mb-1">Debug Log:</div>{debugInfo.map((info, i) => (<div key={i} className="text-gray-700">{info}</div>))}</div>
+          {/* 显示预览界面时的按钮 */}
+          {showPreview && (
+            <div className="flex justify-center mt-6 space-x-4">
+              <button
+                onClick={handleRetake}
+                className="py-1 px-4 border border-gray-300 text-black rounded-lg font-bold cursor-pointer"
+              >
+                Retake photo
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="py-1 px-4 bg-teal-600 text-white rounded-lg font-bold cursor-pointer"
+              >
+                Submit
+              </button>
+            </div>
+          )}
+
+          {/* 显示拍照指导 */}
+          {!showPreview && (
+            <div className="flex flex-col w-full text-black">
+              <p className="text-xs py-4">To take a picture, follow the hand poses in the order shown below. The system will automatically capture the image once the final pose is detected.</p>
+              <div className="flex flex-row justify-center items-center">
+                <img className="w-14 h-14" src={pose1} />
+                <img className="w-6 h-6" src={chevron} />
+                <img className="w-14 h-14" src={pose2} />
+                <img className="w-6 h-6" src={chevron} />
+                <img className="w-14 h-14" src={pose3} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

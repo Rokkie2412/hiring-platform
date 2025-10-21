@@ -30,7 +30,6 @@ const TEXT_VARIANT = {
 }
 
 const StatusBadge = (props: StatusBadgeProps): ReactElement => {
-  console.log(props.type)
   const style = STATUS_STYLES[props.type.toLowerCase() as StatusType];
 
   return (

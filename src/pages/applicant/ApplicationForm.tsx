@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 
 import backIcon from "../../assets/backIcon.png";
+import { showErrorToast, showSuccessToast } from '../../components/'
 import photoAvatar from "../../assets/photoAvatar.png";
 import UploadIcon from "../../assets/uploadIcon.png";
 import {
@@ -18,7 +19,7 @@ import { useJobStore } from "../../store/jobStore";
 import CapturePhotoModal from "./CapturePhotoModal";
 import "./styles.css";
 import { buildValidationSchema } from "./utils";
-import type { FormikValues } from "./types";
+import type { ApplicationForm } from "./types";
 
 const Loading = (loading: boolean): ReactNode => {
   if (loading) return <LoadingLayer text="Loading..." />;
@@ -28,12 +29,12 @@ const Loading = (loading: boolean): ReactNode => {
 const ApplicationForm = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { selectedJob, fetchApplicationForm, applicationForm, loading } = useJobStore();
+  const { selectedJob, fetchApplicationForm, applicationForm, loading, photoTemp, setPhotoTemp, insertApplicants } = useJobStore();
 
-  const formik = useFormik<FormikValues>({
+  const formik = useFormik<ApplicationForm>({
     initialValues: {
       full_name: "",
-      photo_profile: "",
+      photo_profile: photoTemp,
       gender: "",
       domicile: "",
       email: "",
@@ -45,7 +46,14 @@ const ApplicationForm = () => {
     validateOnBlur: false,
     validationSchema: buildValidationSchema(applicationForm),
     onSubmit: (values) => {
-      console.log("Submitted:", values);
+      try {
+        insertApplicants(values, photoTemp, selectedJob?.id || '')
+        showSuccessToast()
+        setPhotoTemp("")
+        navigate("/")
+      } catch (error) {
+        showErrorToast()
+      }
     },
   });
 
@@ -53,17 +61,24 @@ const ApplicationForm = () => {
     if (selectedJob) {
       fetchApplicationForm(selectedJob);
     } else {
-      console.log("No selected job");
       navigate("/");
       window.location.reload();
     }
   }, [selectedJob, fetchApplicationForm, navigate]);
 
+  useEffect(() => {
+    formik.values.photo_profile = photoTemp
+  }, [photoTemp])
+
   const PhotoSection = (isRequired: boolean, error?: string) => (
     <div className="text-black mt-6 gap-2">
       {isRequired && <p className="font-bold text-xs text-red-600 pb-2">* Required</p>}
       <p className="font-bold text-xs mb-2">Photo Profile</p>
-      <img className="w-32 h-32 my-2 rounded-md object-cover" src={photoAvatar} alt="Photo" />
+      <img
+        className="w-32 h-32 my-2 rounded-md object-cover"
+        src={photoTemp || photoAvatar}
+        alt="Photo"
+      />
       <button
         type="button"
         onClick={() => setShowModal(true)}
@@ -72,11 +87,11 @@ const ApplicationForm = () => {
         <img className="w-4 h-4" src={UploadIcon} alt="Upload" />
         <p className="font-medium text-sm">Take a Picture</p>
       </button>
-      <p className="text-xs text-red-600">{error || ''}</p>
+      <p className="text-xs text-red-600 mt-2">{error || ''}</p>
     </div>
   );
 
-  const PronounSelector = (isRequired: boolean) => (
+  const PronounSelector = (isRequired: boolean, error?: string) => (
     <div className="max-w-md">
       <label className="block mb-2 text-xs">
         <span className="text-black font-medium">Pronoun (gender)</span>
@@ -107,6 +122,7 @@ const ApplicationForm = () => {
           <span className="text-black">He/him (Male)</span>
         </label>
       </div>
+      <p className="text-xs text-red-600 mt-2">{error || ''}</p>
     </div>
   );
 
@@ -146,13 +162,13 @@ const ApplicationForm = () => {
             key={key}
             label="Date of Birth"
             required={isRequired}
-            onChange={formik.handleChange}
+            onChange={(e) => formik.setFieldValue(key, e)}
             value={formik.values.date_of_birth}
           />
         );
 
       case "gender":
-        return <div key={key}>{PronounSelector(isRequired)}</div>;
+        return <div key={key}>{PronounSelector(isRequired, formik.errors.gender)}</div>;
 
       case "domicile":
         return (
@@ -175,7 +191,8 @@ const ApplicationForm = () => {
             label="Phone Number"
             required={isRequired}
             value={formik.values.phone_number}
-            onChange={formik.handleChange}
+            onChange={(e) => formik.setFieldValue(key, e)}
+            error={formik.errors.phone_number}
           />
         );
 

@@ -3,6 +3,7 @@ import { create } from "zustand";
 import supabase from "../lib/supabase";
 import type { DbRequirementsField, Job, JobStore } from "../types";
 import type { JobFormValues } from "../pages/admin/types";
+import type { ApplicationForm } from "../pages/applicant/types";
 
 const formatCreatedAt = (dateInput?: string | Date): string => {
   if (!dateInput) return "";
@@ -18,6 +19,7 @@ const formatCreatedAt = (dateInput?: string | Date): string => {
 
 
 export const useJobStore = create<JobStore>((set) => ({
+  photoTemp: '',
   jobs: [],
   loading: false,
   error: null,
@@ -30,7 +32,6 @@ export const useJobStore = create<JobStore>((set) => ({
     try {
       if (!selectedJob) return;
       const { data, error } = await supabase.from("form_requirements").select("*").eq("id", selectedJob.id);
-      console.log(data?.[0].field)
       if (error) throw new Error(error.message);
       set({ applicationForm: data?.[0].field || [], loading: false });   
     } catch (err) {
@@ -61,7 +62,7 @@ export const useJobStore = create<JobStore>((set) => ({
 
       if (rpcError) throw new Error(rpcError.message);
 
-      console.log(newJobId)
+      const slug = value.jobName.toLowerCase().replace(/\s+/g, "-");
 
       const { data: jobData, error: jobError } = await supabase
         .from("job_list")
@@ -69,7 +70,7 @@ export const useJobStore = create<JobStore>((set) => ({
           {
             id: newJobId, 
             created_at: new Date(),
-            slug: value.jobName,
+            slug: slug,
             title: value.jobName,
             company_name: value.company_name,
             status: jobStatus,
@@ -92,8 +93,6 @@ export const useJobStore = create<JobStore>((set) => ({
         .select()
         .single();
 
-      console.log(jobData)
-      console.log(jobError)
       if (jobError) throw new Error(jobError.message);
 
       const { error: reqError } = await supabase
@@ -106,8 +105,6 @@ export const useJobStore = create<JobStore>((set) => ({
         });
 
       if (reqError) throw new Error(reqError.message);
-
-      console.log("✅ Job inserted:", jobData);
 
       set(() => ({
         loading: false,
@@ -122,5 +119,44 @@ export const useJobStore = create<JobStore>((set) => ({
     }
   },
 
+  insertApplicants: async (values: ApplicationForm, photoTemp: string, selectedJobId: string) => {
+    set({ loading: true, error: null });
+  
+    try {
+      const { data: newCandidateId, error: rpcError } = await supabase
+        .rpc('generate_next_job_id');
+  
+      if (rpcError) throw new Error(rpcError.message);
+  
+      const { data: applicantData, error: applicantError } = await supabase
+        .from("applicants")
+        .insert([
+          {
+            id: newCandidateId, 
+            job_id: selectedJobId,
+            attributes: [
+              { key: "fullName", label: "Full Name", value: values.full_name, order: 1},
+              { key: "email", label: "Email", value: values.email, order: 2 },
+              { key: "phone", label: "Phone", value: values.phone_number, order: 3 },
+              { key: "domicile", label: "Domicile", value: values.domicile, order: 4 },
+              { key: "gender", label: "Gender", value: values.gender, order: 5 },
+              { key: "linkedin_link", label: "LinkedIn", value: values.linkedin_link, order: 6 },
+              { key: "photo_profile", label: "Photo Profile", value: photoTemp, order: 7},
+            ]
+          }
+        ]);
+  
+      if (applicantError) throw applicantError;
+  
+      set(() => ({ loading: false }));
+      
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Network error";
+      console.error('Full error:', err);
+      set({ error: message, loading: false });
+    }
+  },
+
   setSelectedJob: (job) => set({ selectedJob: job }),
+  setPhotoTemp: (photo: string) => set({ photoTemp: photo }),
 }));
