@@ -4,7 +4,7 @@ import type { ErrorStateProps } from "./types";
 
 const ErrorState = ({
   message = "Something went wrong, please refresh the page.",
-  onRetry
+  onRetry,
 }: ErrorStateProps): ReactElement => {
   const handleRefresh = () => {
     if (onRetry) onRetry();
@@ -28,11 +28,11 @@ const ErrorState = ({
         />
       </svg>
 
-      {/* 📝 Message */}
-      <p className="text-lg font-semibold text-gray-800 mb-2">Something went wrong</p>
+      <p className="text-lg font-semibold text-gray-800 mb-2">
+        Something went wrong
+      </p>
       <p className="text-gray-600 text-sm mb-6">{message}</p>
 
-      {/* 🔄 Refresh Button */}
       <button
         onClick={handleRefresh}
         className="bg-[#01777F] hover:bg-[#01666e] text-white font-semibold px-5 py-2.5 rounded-lg shadow transition-colors"

@@ -1,11 +1,16 @@
 import { type ReactElement } from "react";
-
-import type { RequirementOption } from '../../types'
+import type { RequirementOption } from "../../types";
 import type { RequirementToggleProps } from "./types";
 
-const FormRadioButton = (props: RequirementToggleProps): ReactElement => {
-  const { value, onChange, label, disabled = false, disabledOptions = [], name, defaultValue = 'mandatory' } = props;
-
+const FormRadioButton = ({
+  value,
+  onChange,
+  label,
+  name,
+  disabled = false,
+  disabledOptions = [],
+  defaultValue = "mandatory",
+}: RequirementToggleProps): ReactElement => {
   const currentValue = value ?? defaultValue;
 
   const options: { value: RequirementOption; label: string }[] = [
@@ -21,14 +26,21 @@ const FormRadioButton = (props: RequirementToggleProps): ReactElement => {
   };
 
   return (
-    <div className="flex flex-row gap-2 w-full justify-between items-center">
-      {label && (
-        <label className="text-sm font-medium text-gray-700">{label}</label>
-      )}
+    <div className="flex flex-row items-center justify-between w-full gap-2">
+      {label && <label className="text-sm font-medium text-gray-700">{label}</label>}
+
       <div className="flex flex-row gap-3">
         {options.map((option) => {
           const isSelected = currentValue === option.value;
           const isDisabled = disabled || disabledOptions.includes(option.value);
+
+          const baseClass =
+            "px-6 py-2 rounded-full text-sm font-medium border transition-all";
+          const activeClass =
+            "bg-white border-teal-500 text-teal-600 shadow-sm";
+          const inactiveClass = "bg-transparent border-gray-300 text-black";
+          const disabledClass =
+            "bg-gray-200 text-gray-400 border-transparent cursor-not-allowed opacity-60";
 
           return (
             <button
@@ -36,27 +48,19 @@ const FormRadioButton = (props: RequirementToggleProps): ReactElement => {
               type="button"
               onClick={() => handleChange(option.value)}
               disabled={isDisabled}
-              className={`
-                px-6 py-2 rounded-full text-sm font-medium transition-all
-                ${isSelected && !isDisabled
-                  ? "bg-white border-1 border-teal-500 text-teal-500"
-                  : ""
-                }
-                ${!isSelected && !isDisabled
-                  ? "bg-transparent text-black border-1 border-gray-300"
-                  : ""
-                }
-                ${isDisabled
-                  ? "bg-gray-200 text-gray-400 border-1 border-transparent cursor-not-allowed opacity-60"
-                  : "cursor-pointer"
-                }
-              `}
+              className={`${baseClass} ${isDisabled
+                ? disabledClass
+                : isSelected
+                  ? activeClass
+                  : inactiveClass
+                }`}
             >
               {option.label}
             </button>
           );
         })}
       </div>
+
       {name && <input type="hidden" name={name} value={currentValue} />}
     </div>
   );

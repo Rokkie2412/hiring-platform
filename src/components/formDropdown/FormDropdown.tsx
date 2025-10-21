@@ -1,35 +1,30 @@
-import { type ReactElement, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactElement } from "react";
 
-import type { DropdownOption, FormDropdownProps } from './types'
+import type { DropdownOption, FormDropdownProps } from "./types";
 
-const FormDropdown = (props: FormDropdownProps): ReactElement => {
-  const {
-    label,
-    name,
-    value,
-    onChange,
-    options,
-    placeholder = "Select option",
-    error,
-    required = false,
-    disabled = false,
-  } = props;
-
+const FormDropdown = ({
+  label,
+  name,
+  value,
+  onChange,
+  options,
+  placeholder = "Select option",
+  error,
+  required = false,
+  disabled = false,
+}: FormDropdownProps): ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<DropdownOption | null>(
     options.find((opt) => opt.value === value) || null
   );
   const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -46,9 +41,7 @@ const FormDropdown = (props: FormDropdownProps): ReactElement => {
   };
 
   const handleToggle = () => {
-    if (!disabled) {
-      setIsOpen(!isOpen);
-    }
+    if (!disabled) setIsOpen(!isOpen);
   };
 
   return (
@@ -69,19 +62,15 @@ const FormDropdown = (props: FormDropdownProps): ReactElement => {
             w-full px-4 py-3 text-left text-sm rounded-lg border-2 transition-all
             flex items-center justify-between
             focus:border-teal-600
-            border-gray-300
-            ${disabled ? "bg-gray-100 cursor-not-allowed" : ""}
+            ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white border-gray-300"}
             ${error ? "border-red-500" : ""}
           `}
         >
-          <span
-            className={selectedOption ? "text-gray-900" : "text-gray-400"}
-          >
+          <span className={selectedOption ? "text-gray-900" : "text-gray-400"}>
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           <svg
-            className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
-              }`}
+            className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -89,11 +78,12 @@ const FormDropdown = (props: FormDropdownProps): ReactElement => {
             viewBox="0 0 24 24"
             stroke="currentColor"
           >
-            <path d="M19 9l-7 7-7-7"></path>
+            <path d="M19 9l-7 7-7-7" />
           </svg>
         </button>
+
         {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white border-1 border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
             {options.map((option, index) => {
               const isSelected = selectedOption?.value === option.value;
               const isLast = index === options.length - 1;
@@ -106,20 +96,18 @@ const FormDropdown = (props: FormDropdownProps): ReactElement => {
                     className={`
                       w-full px-4 py-3 text-left text-sm transition-colors
                       flex items-center justify-between
-                      ${isSelected
-                        ? "text-black font-bold"
-                        : "text-gray-700 hover:bg-gray-50"
-                      }
+                      ${isSelected ? "text-black font-semibold" : "text-gray-700 hover:bg-gray-50"}
                     `}
                   >
                     <span>{option.label}</span>
                   </button>
-                  {!isLast && <div className="border-t border-dashed border-gray-200"></div>}
+                  {!isLast && <div className="border-t border-dashed border-gray-200" />}
                 </div>
               );
             })}
           </div>
         )}
+
         <input type="hidden" name={name} value={value} />
       </div>
 

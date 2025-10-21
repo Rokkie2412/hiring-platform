@@ -12,7 +12,8 @@ const AppRouter = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<JobListApplicant />} />
-          <Route path="/application-form" element={<ApplicationForm />} />
+          <Route path="/job/:slug/:job_id" element={<JobListApplicant />} />
+          <Route path="/application-form/:slug/:job_id" element={<ApplicationForm />} />
           <Route path="/admin" element={<JobAdmin />}>
             <Route path="add-job" element={<JobAdmin />} />
           </Route>

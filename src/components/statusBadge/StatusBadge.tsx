@@ -23,20 +23,21 @@ const STATUS_STYLES: Record<
   },
 };
 
-const TEXT_VARIANT = {
+const TEXT_VARIANT: Record<StatusType, string> = {
   active: "Active",
   inactive: "Inactive",
   draft: "Draft",
-}
+};
 
-const StatusBadge = (props: StatusBadgeProps): ReactElement => {
-  const style = STATUS_STYLES[props.type.toLowerCase() as StatusType];
+const StatusBadge = ({ type }: StatusBadgeProps): ReactElement => {
+  const normalizedType = type.toLowerCase() as StatusType;
+  const style = STATUS_STYLES[normalizedType];
 
   return (
     <span
       className={`inline-flex items-center justify-center px-3 py-0.5 rounded-md text-xs font-semibold border ${style.border} ${style.text} ${style.bg}`}
     >
-      {TEXT_VARIANT[props.type.toLowerCase() as StatusType]}
+      {TEXT_VARIANT[normalizedType]}
     </span>
   );
 };

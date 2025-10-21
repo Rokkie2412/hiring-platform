@@ -1,37 +1,68 @@
-import { useFormik } from "formik";
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import { useNavigate, type NavigateFunction, useParams } from "react-router-dom";
 
 import backIcon from "../../assets/backIcon.png";
-import { showErrorToast, showSuccessToast } from '../../components/'
 import photoAvatar from "../../assets/photoAvatar.png";
 import UploadIcon from "../../assets/uploadIcon.png";
+import succesFormImage from '../../assets/succesFormImage.png'
 import {
   DomicilePicker,
   FormDatePicker,
   FormInputLinkvalidation,
   FormInputText,
   FormPhoneNumber,
-  LoadingLayer,
+  Loading,
+  showErrorToast,
+  showSuccessToast,
 } from "../../components";
 import { useJobStore } from "../../store/jobStore";
 
-import CapturePhotoModal from "./CapturePhotoModal";
 import "./styles.css";
+import CapturePhotoModal from "./CapturePhotoModal";
 import { buildValidationSchema } from "./utils";
-import type { ApplicationForm } from "./types";
+import type { ApplicationForm as ApplicationFormType } from "./types";
 
-const Loading = (loading: boolean): ReactNode => {
-  if (loading) return <LoadingLayer text="Loading..." />;
+const LoadingSection = (loading: boolean): ReactNode => {
+  if (loading) return <Loading text="Loading..." />;
   return null;
 };
 
-const ApplicationForm = () => {
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const { selectedJob, fetchApplicationForm, applicationForm, loading, photoTemp, setPhotoTemp, insertApplicants } = useJobStore();
+const successScreen = (isSuccess: boolean, loading: boolean, navigate: NavigateFunction) => {
+  if (!isSuccess || loading) return null;
 
-  const formik = useFormik<ApplicationForm>({
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <img className="w-40 h-40" src={succesFormImage} alt="Success Form" />
+      <p className="text-2xl font-bold text-black">🎉 Your application was sent!</p>
+      <p className="text-base text-black text-center">
+        Congratulations! You've taken the first step towards a rewarding career at Rakamin.
+        <br />
+        We look forward to learning more about you during the application process.
+      </p>
+      <button onClick={() => navigate("/", { replace: true })} className="bg-[#01959F] text-white py-2 px-4 rounded-lg font-bold w-1/2 cursor-pointer">
+        Back to Menu
+      </button>
+    </div>
+  )
+}
+
+const ApplicationForm = () => {
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const { job_id } = useParams();
+  const navigate = useNavigate();
+  const {
+    selectedJob,
+    fetchApplicationForm,
+    applicationForm,
+    loading,
+    photoTemp,
+    setPhotoTemp,
+    insertApplicants,
+  } = useJobStore();
+
+  const formik = useFormik<ApplicationFormType>({
     initialValues: {
       full_name: "",
       photo_profile: photoTemp,
@@ -47,12 +78,13 @@ const ApplicationForm = () => {
     validationSchema: buildValidationSchema(applicationForm),
     onSubmit: (values) => {
       try {
-        insertApplicants(values, photoTemp, selectedJob?.id || '')
-        showSuccessToast()
-        setPhotoTemp("")
-        navigate("/")
-      } catch (error) {
-        showErrorToast()
+        insertApplicants(values, photoTemp, selectedJob?.id || "");
+        showSuccessToast();
+        setPhotoTemp("");
+        setIsSuccess(true);
+      } catch {
+        setIsSuccess(false);
+        showErrorToast();
       }
     },
   });
@@ -60,34 +92,42 @@ const ApplicationForm = () => {
   useEffect(() => {
     if (selectedJob) {
       fetchApplicationForm(selectedJob);
+      if (job_id !== selectedJob.id) {
+        navigate("/", { replace: true });
+        window.location.reload();
+      }
     } else {
-      navigate("/");
+      navigate("/", { replace: true });
       window.location.reload();
     }
-  }, [selectedJob, fetchApplicationForm, navigate]);
+  }, [selectedJob, fetchApplicationForm, navigate, job_id]);
 
   useEffect(() => {
-    formik.values.photo_profile = photoTemp
-  }, [photoTemp])
+    formik.values.photo_profile = photoTemp;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoTemp]);
 
   const PhotoSection = (isRequired: boolean, error?: string) => (
-    <div className="text-black mt-6 gap-2">
+    <div className="text-black gap-2">
       {isRequired && <p className="font-bold text-xs text-red-600 pb-2">* Required</p>}
       <p className="font-bold text-xs mb-2">Photo Profile</p>
+
       <img
         className="w-32 h-32 my-2 rounded-md object-cover"
         src={photoTemp || photoAvatar}
         alt="Photo"
       />
+
       <button
         type="button"
         onClick={() => setShowModal(true)}
-        className="flex flex-row items-center gap-2 cursor-pointer py-1 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+        className="flex flex-row items-center justify-center gap-2 cursor-pointer py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto"
       >
         <img className="w-4 h-4" src={UploadIcon} alt="Upload" />
-        <p className="font-medium text-sm">Take a Picture</p>
+        <p className="font-medium text-sm text-center">Take a Picture</p>
       </button>
-      <p className="text-xs text-red-600 mt-2">{error || ''}</p>
+
+      <p className="text-xs text-red-600 mt-2">{error || ""}</p>
     </div>
   );
 
@@ -97,7 +137,8 @@ const ApplicationForm = () => {
         <span className="text-black font-medium">Pronoun (gender)</span>
         {isRequired && <span className="text-red-500">*</span>}
       </label>
-      <div className="flex gap-8">
+
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="radio"
@@ -105,9 +146,9 @@ const ApplicationForm = () => {
             value="female"
             checked={formik.values.gender === "female"}
             onChange={formik.handleChange}
-            className="w-5 h-5 cursor-pointer accent-teal-700"
+            className="w-5 h-5 cursor-pointer accent-[#01959F]"
           />
-          <span className="text-black">She/her (Female)</span>
+          <span className="text-black text-sm sm:text-base">She/her (Female)</span>
         </label>
 
         <label className="flex items-center gap-3 cursor-pointer">
@@ -117,16 +158,16 @@ const ApplicationForm = () => {
             value="male"
             checked={formik.values.gender === "male"}
             onChange={formik.handleChange}
-            className="w-5 h-5 cursor-pointer accent-teal-700"
+            className="w-5 h-5 cursor-pointer accent-[#01959F]"
           />
-          <span className="text-black">He/him (Male)</span>
+          <span className="text-black text-sm sm:text-base">He/him (Male)</span>
         </label>
       </div>
-      <p className="text-xs text-red-600 mt-2">{error || ''}</p>
+
+      <p className="text-xs text-red-600 mt-2">{error || ""}</p>
     </div>
   );
 
-  // Urutan field sesuai tampilan di gambar
   const orderedKeys = [
     "photo_profile",
     "full_name",
@@ -142,7 +183,6 @@ const ApplicationForm = () => {
     switch (key) {
       case "photo_profile":
         return <div key={key}>{PhotoSection(isRequired, formik.errors.photo_profile)}</div>;
-
       case "full_name":
         return (
           <FormInputText
@@ -155,7 +195,6 @@ const ApplicationForm = () => {
             error={formik.errors.full_name}
           />
         );
-
       case "date_of_birth":
         return (
           <FormDatePicker
@@ -166,10 +205,8 @@ const ApplicationForm = () => {
             value={formik.values.date_of_birth}
           />
         );
-
       case "gender":
         return <div key={key}>{PronounSelector(isRequired, formik.errors.gender)}</div>;
-
       case "domicile":
         return (
           <DomicilePicker
@@ -183,7 +220,6 @@ const ApplicationForm = () => {
             touched={formik.touched.domicile}
           />
         );
-
       case "phone_number":
         return (
           <FormPhoneNumber
@@ -195,7 +231,6 @@ const ApplicationForm = () => {
             error={formik.errors.phone_number}
           />
         );
-
       case "email":
         return (
           <FormInputText
@@ -208,7 +243,6 @@ const ApplicationForm = () => {
             error={formik.errors.email}
           />
         );
-
       case "linkedin_link":
         return (
           <FormInputLinkvalidation
@@ -220,61 +254,84 @@ const ApplicationForm = () => {
             onChange={formik.handleChange}
           />
         );
-
       default:
         return null;
     }
   };
 
-  // Filter visible fields
   const visibleFields = applicationForm.filter(
     (item) => item.validation?.required === true || item?.validation.required === "optional"
   );
 
-  // Urutkan sesuai orderedKeys
   const orderedFields = orderedKeys
     .map((key) => visibleFields.find((f) => f.key === key))
     .filter(Boolean);
 
   return (
-    <div className="w-full h-full bg-white flex flex-col items-center justify-center">
-      {Loading(loading)}
+    <div
+      className="
+        w-full 
+        max-h-dvh 
+        bg-gray-50 
+        flex justify-center items-center 
+        overflow-hidden 
+        fixed inset-0
+      "
+    >
+      {LoadingSection(loading)}
       {showModal && <CapturePhotoModal setter={setShowModal} />}
-
+      {successScreen(isSuccess, loading, navigate)}
       <form
         onSubmit={formik.handleSubmit}
-        className="h-[90%] w-3/5 bg-white border border-gray-300 flex flex-col rounded shadow-sm"
+        className={`
+          ${isSuccess && !loading ? "hidden" : ""}
+          w-full sm:w-4/5 lg:w-3/5 
+          bg-white 
+          border border-gray-300 
+          flex flex-col 
+          shadow-md
+          overflow-hidden
+          max-h-[95vh]
+        `}
       >
-        {/* Header */}
-        <div className="flex flex-row items-center text-black gap-2 pt-10 px-10">
+        <div className="flex items-center gap-2 p-4 sm:p-6 bg-white sticky top-0 z-10">
           <img
-            onClick={() => navigate("/")}
-            className="w-6 h-6 border border-gray-300 rounded-lg p-0.5 cursor-pointer"
+            onClick={() => navigate(-1)}
+            className="w-6 h-6 border border-gray-300 rounded-md p-0.5 cursor-pointer hover:bg-gray-100"
             src={backIcon}
             alt="Back"
           />
-          <p className="font-bold text-lg">
-            {`Apply ${selectedJob?.title} at ${selectedJob?.company_name}`}
+          <p className="font-bold text-base sm:text-lg text-black text-center sm:text-left">
+            Apply {selectedJob?.title} at {selectedJob?.company_name}
           </p>
         </div>
 
-        {/* Field Area */}
-        <div className="flex flex-col overflow-y-auto h-full mx-16 space-y-4 pb-10">
+        <div
+          className="
+            flex flex-col gap-6
+            px-4 sm:px-8 
+            py-6 sm:py-8 
+            overflow-y-auto
+            scrollbar-gutter-stable
+          "
+        >
           {orderedFields.map((field) =>
-            renderField(
-              field?.key || "",
-              field?.validation?.required === true
-            )
+            renderField(field?.key || "", field?.validation?.required === true)
           )}
         </div>
 
-        {/* Submit */}
-        <div className="flex flex-row justify-center items-end border-t py-6 px-10 border-gray-300">
+        <div className="flex w-full justify-center border-t border-gray-200 bg-white py-4 sm:py-6 px-4 sm:px-8">
           <button
             type="submit"
-            className="bg-teal-700 text-white px-4 py-2 rounded font-bold w-full hover:bg-teal-800 transition"
+            className="
+              bg-[#01959F] hover:bg-[#018189]
+              text-white font-semibold
+              px-4 sm:px-6 py-2 sm:py-3
+              rounded-lg w-full
+              transition
+            "
           >
-            Submit
+            Submit Application
           </button>
         </div>
       </form>

@@ -5,7 +5,7 @@ import buttonBackground from "../../assets/buttonBackgroundImage.jpg";
 import emptyState from "../../assets/emptyState.png";
 import searchIcon from "../../assets/search.png";
 import adminAvatar from "../../assets/adminAvatar.png";
-import { StatusBadge, LoadingLayer } from "../../components";
+import { StatusBadge, Loading } from "../../components";
 import { useJobStore } from "../../store/jobStore";
 import type { Job } from "../../types";
 import AddJobModal from "./ModalForm";
@@ -98,7 +98,7 @@ const EmptyJobList = (
 };
 
 const LoadingState = (loading: boolean): ReactNode =>
-  loading ? <LoadingLayer text="Loading jobs..." /> : null;
+  loading ? <Loading text="Loading jobs..." /> : null;
 
 const JobAdmin = () => {
   const navigate = useNavigate();

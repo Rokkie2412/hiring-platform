@@ -29,3 +29,12 @@ export type ApplicationForm = {
   linkedin_link: string;
   date_of_birth: Date;
 }
+
+export type NormalizedLandmark = {
+  x: number;
+  y: number;
+  z?: number;
+  visibility?: number;
+};
+
+export type NormalizedLandmarkList = NormalizedLandmark[];

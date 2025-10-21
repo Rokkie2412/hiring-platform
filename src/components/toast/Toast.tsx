@@ -1,10 +1,12 @@
 import { Slide, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 import CloseIcon from "../../assets/close.png";
+
 import "./CustomToast.css";
 
-const showSuccessToast = () => {
-  toast.success("Job vacancy successfully created", {
+const showSuccessToast = (message = "Job vacancy successfully created") => {
+  toast.success(message, {
     position: "bottom-left",
     hideProgressBar: true,
     transition: Slide,
@@ -23,19 +25,18 @@ const showSuccessToast = () => {
   });
 };
 
-// Fungsi baru untuk Error Toast
-const showErrorToast = (message: string = "Failed to create job vacancy") => {
+const showErrorToast = (message = "Failed to create job vacancy") => {
   toast.error(message, {
     position: "bottom-left",
     hideProgressBar: true,
     transition: Slide,
     icon: false,
-    className: "custom-error-toast", // Menggunakan kelas CSS yang berbeda
+    className: "custom-error-toast",
     closeButton: ({ closeToast }) => (
       <img
         src={CloseIcon}
         alt="close"
-        className="custom-error-toast-close" // Kelas CSS untuk tombol close
+        className="custom-error-toast-close"
         width={16}
         height={16}
         onClick={closeToast}
@@ -44,7 +45,4 @@ const showErrorToast = (message: string = "Failed to create job vacancy") => {
   });
 };
 
-export {
-  showSuccessToast,
-  showErrorToast,
-}
+export { showSuccessToast, showErrorToast };

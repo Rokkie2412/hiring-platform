@@ -16,20 +16,5 @@ const LoadingLayer = (props: LoadingProps) => {
   );
 };
 
-const Loading = (props: LoadingProps) => {
-  const { text="Loading..." } = props;
-  return (
-    <>
-      <div
-        className="w-12 h-12 border-4 border-t-transparent border-black rounded-full animate-spin"
-      />
-      {text && (
-        <p className="text-black text-lg mt-4 font-medium tracking-wide">
-          {text}
-        </p>
-      )}
-    </>
-  );
-};
 
-export { LoadingLayer, Loading };
+export default LoadingLayer;

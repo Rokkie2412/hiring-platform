@@ -1,1 +1,1 @@
-export { Loading, LoadingLayer } from './Loading'
+export { default } from './Loading'

@@ -2,7 +2,7 @@ import FormInputNumber from "./formInputNumber";
 import FormInputText from "./formInputText";
 import FormInputTextArea from "./formInputTextArea";
 import FormRadioButton from "./formRadioButton";
-import { Loading, LoadingLayer } from "./loading";
+import Loading from "./loading";
 import StatusBadge from "./statusBadge";
 import FormDropdown from "./formDropdown";
 import ErrorState from "./errorState";
@@ -18,7 +18,6 @@ export {
   FormInputTextArea, 
   FormRadioButton, 
   Loading,
-  LoadingLayer,
   StatusBadge,
   FormDropdown,
   ErrorState,
