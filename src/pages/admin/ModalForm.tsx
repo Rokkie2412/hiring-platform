@@ -8,9 +8,7 @@ import {
   FormInputNumber,
   FormInputText,
   FormInputTextArea,
-  FormRadioButton,
-  showErrorToast,
-  showSuccessToast,
+  FormRadioButton
 } from '../../components';
 import { useJobStore } from '../../store/jobStore';
 import type { ConfirmationModalProps, JobFormValues } from './types';
@@ -126,10 +124,8 @@ const ModalForm = () => {
   ) => async () => {
     try {
       await insertJob(values, status, field);
-      showSuccessToast();
-      navigate('/admin');
+      navigate('/admin', { replace: true });
     } catch (error) {
-      showErrorToast();
       console.error('Failed to insert job:', error);
     }
   };

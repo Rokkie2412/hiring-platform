@@ -146,7 +146,7 @@ const JobListApplicant = (): ReactElement => {
   };
 
   return (
-    <div className="py-6 sm:py-10 px-4 sm:px-10 flex bg-gray-50 w-full h-full min-h-screen">
+    <div className="py-6 sm:py-10 px-4 sm:px-10 flex bg-white w-full h-full min-h-screen">
       <TopBar />
       {renderContent()}
     </div>

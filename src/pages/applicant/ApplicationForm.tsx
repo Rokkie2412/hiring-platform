@@ -12,9 +12,7 @@ import {
   FormInputLinkvalidation,
   FormInputText,
   FormPhoneNumber,
-  Loading,
-  showErrorToast,
-  showSuccessToast,
+  Loading
 } from "../../components";
 import { useJobStore } from "../../store/jobStore";
 
@@ -79,12 +77,10 @@ const ApplicationForm = () => {
     onSubmit: (values) => {
       try {
         insertApplicants(values, photoTemp, selectedJob?.id || "");
-        showSuccessToast();
         setPhotoTemp("");
         setIsSuccess(true);
       } catch {
         setIsSuccess(false);
-        showErrorToast();
       }
     },
   });

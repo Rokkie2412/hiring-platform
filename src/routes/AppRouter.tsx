@@ -4,6 +4,7 @@ import JobListApplicant from "../pages/applicant/JobListApplicant";
 import JobAdmin from "../pages/admin/JobAdmin";
 import { ToastContainer } from "react-toastify";
 import ApplicationForm from "../pages/applicant/ApplicationForm";
+import ManageJob from "../pages/admin/ManageJob";
 
 const AppRouter = () => {
   return (
@@ -17,6 +18,7 @@ const AppRouter = () => {
           <Route path="/admin" element={<JobAdmin />}>
             <Route path="add-job" element={<JobAdmin />} />
           </Route>
+          <Route path="/admin/manage-job/:job_id" element={<ManageJob />} />
         </Routes>
       </BrowserRouter>
     </>

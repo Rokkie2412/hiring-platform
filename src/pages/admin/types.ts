@@ -24,3 +24,26 @@ export type JobFormValues = {
     dob: RequirementOption;
   };
 }
+
+export type CandidateRow = {
+  id: string;
+  job_id: string;
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  domicile?: string;
+  gender?: string;
+  linkedin_link?: string;
+  photo_profile?: string;
+};
+
+export type CandidateAttribute = {
+  key: keyof CandidateRow;
+  value: string;
+};
+
+export type ApplicantRow = {
+  id: string;
+  job_id: string;
+  attributes: CandidateAttribute[];
+};

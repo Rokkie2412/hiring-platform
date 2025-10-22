@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState, useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useLocation, useNavigate, type NavigateFunction } from "react-router-dom";
 
+import adminAvatar from "../../assets/adminAvatar.png";
 import buttonBackground from "../../assets/buttonBackgroundImage.jpg";
 import emptyState from "../../assets/emptyState.png";
 import searchIcon from "../../assets/search.png";
-import adminAvatar from "../../assets/adminAvatar.png";
-import { StatusBadge, Loading } from "../../components";
+import { Loading, StatusBadge } from "../../components";
 import { useJobStore } from "../../store/jobStore";
 import type { Job } from "../../types";
+
 import AddJobModal from "./ModalForm";
-import React from "react";
 
 const TopBar = () => (
   <header className="fixed w-full z-50 flex justify-between items-center bg-white px-6 h-16 border-b-2 border-gray-300 shadow-sm">
@@ -45,7 +45,7 @@ const CreateJobBanner = (navigate: NavigateFunction) => (
   </div>
 );
 
-const JobListCard = (job: Job) => (
+const JobListCard = (job: Job, navigate: NavigateFunction, setSelectedJob: (job: Job) => void) => (
   <div className="flex flex-col mb-3 w-full bg-white p-6 gap-4 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.09)] transition-shadow duration-200">
     <div className="flex flex-row w-full items-center gap-3">
       {job.list_card?.badge && <StatusBadge type={job.list_card.badge.toLowerCase()} />}
@@ -56,7 +56,10 @@ const JobListCard = (job: Job) => (
     <p className="text-black font-bold text-lg">{job.title}</p>
     <div className="flex flex-row items-center justify-between w-full">
       <p className="text-gray-700 text-base">{job.salary_range?.display_text}</p>
-      <button className="bg-[#01777F] font-semibold text-white px-4 py-2 rounded-md hover:bg-[#01656d] transition-colors cursor-pointer">
+      <button onClick={() => {
+        setSelectedJob(job)
+        navigate(`/admin/manage-job/${job.id}`)
+      }} className="bg-[#01777F] font-semibold text-white px-4 py-2 rounded-md hover:bg-[#01656d] transition-colors cursor-pointer">
         {job.list_card?.cta || ""}
       </button>
     </div>
@@ -104,7 +107,7 @@ const JobAdmin = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { jobs, loading, error, fetchJobs } = useJobStore();
+  const { jobs, loading, error, fetchJobs, setSelectedJob } = useJobStore();
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -157,7 +160,7 @@ const JobAdmin = () => {
             {!loading && !error && filteredJobs.length > 0 && (
               <div className="flex flex-col w-full gap-4 max-h-[calc(100vh-140px)] mx-5 pr-5">
                 {filteredJobs.map((job: Job) => (
-                  <JobListCard key={job.id} {...job} />
+                  JobListCard(job, navigate, setSelectedJob)
                 ))}
               </div>
             )}

@@ -15,11 +15,11 @@ export const buildValidationSchema = (applicationForm: JobFieldTyped[]) => {
           : Yup.string();
         break;
 
-      // case "photo_profile":
-      //   shape.photo_profile = isRequired
-      //     ? Yup.string().required("Photo profile is required")
-      //     : Yup.string();
-      //   break;
+      case "photo_profile":
+        shape.photo_profile = isRequired
+          ? Yup.string().required("Photo profile is required")
+          : Yup.string();
+        break;
 
       case "gender":
         shape.gender = isRequired

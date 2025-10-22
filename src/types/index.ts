@@ -48,6 +48,19 @@ export type JobFieldKey =
     field: JobFieldTyped[];
   };
 
+export type Attribute = {
+  key: string;
+  label: string;
+  order: number;
+  value: string;
+};
+
+export type Applicant = {
+  id: string,
+  job_id: string,
+  attributes: Attribute[]
+}
+
 export type JobStore = {
   photoTemp: string,
   setPhotoTemp: (photo: string) => void,
@@ -60,7 +73,9 @@ export type JobStore = {
   insertJob: (value: JobFormValues, jobStatus: string, fieldDb: DbRequirementsField[]) => Promise<null | undefined>,
   setSelectedJob: (job: Job | null) => void,
   fetchApplicationForm: (selectedJob: Job) => Promise<void>,
-  insertApplicants: (values: ApplicationForm, photoTemp: string, selectedJobId: string) => Promise<void>
+  insertApplicants: (values: ApplicationForm, photoTemp: string, selectedJobId: string) => Promise<void>,
+  fetchManageJob: (id: string) => Promise<void>,
+  applicants: Applicant[],
 }
 
 export type RequirementOption = "mandatory" | "optional" | "off";

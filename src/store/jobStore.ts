@@ -4,6 +4,7 @@ import supabase from "../lib/supabase";
 import type { DbRequirementsField, Job, JobStore } from "../types";
 import type { JobFormValues } from "../pages/admin/types";
 import type { ApplicationForm } from "../pages/applicant/types";
+import { showSuccessToast, showErrorToast} from '../components'
 
 const formatCreatedAt = (dateInput?: string | Date): string => {
   if (!dateInput) return "";
@@ -25,6 +26,7 @@ export const useJobStore = create<JobStore>((set) => ({
   error: null,
   selectedJob: null,
   applicationForm: [],
+  applicants: [],
 
   fetchApplicationForm: async (selectedJob: Job) => {
     set({ loading: true, error: null });
@@ -64,7 +66,7 @@ export const useJobStore = create<JobStore>((set) => ({
 
       const slug = value.jobName.toLowerCase().replace(/\s+/g, "-");
 
-      const { data: jobData, error: jobError } = await supabase
+      const { error: jobError } = await supabase
         .from("job_list")
         .insert([
           {
@@ -110,8 +112,11 @@ export const useJobStore = create<JobStore>((set) => ({
         loading: false,
       }));
 
+      showSuccessToast();
+
       // return jobData;
     } catch (err) {
+      showErrorToast()
       const message = err instanceof Error ? err.message : "Failed to insert job";
       console.error("❌ Error inserting job:", message);
       set({ error: message, loading: false });
@@ -124,11 +129,11 @@ export const useJobStore = create<JobStore>((set) => ({
   
     try {
       const { data: newCandidateId, error: rpcError } = await supabase
-        .rpc('generate_next_job_id');
+        .rpc('generate_next_candidate_id');
   
       if (rpcError) throw new Error(rpcError.message);
   
-      const { data: applicantData, error: applicantError } = await supabase
+      const { error: applicantError } = await supabase
         .from("applicants")
         .insert([
           {
@@ -149,10 +154,26 @@ export const useJobStore = create<JobStore>((set) => ({
       if (applicantError) throw applicantError;
   
       set(() => ({ loading: false }));
+
+      showSuccessToast();
       
     } catch (err) {
+      showErrorToast();
       const message = err instanceof Error ? err.message : "Network error";
       console.error('Full error:', err);
+      set({ error: message, loading: false });
+    }
+  },
+
+  fetchManageJob: async (id: string) => {
+    set({ loading: true, error: null });
+
+    try {
+      const { data } = await supabase.from("applicants").select().eq("job_id", id);
+      set({ applicants: data || [] || [], loading: false });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Network error";
+      console.log(message);
       set({ error: message, loading: false });
     }
   },
