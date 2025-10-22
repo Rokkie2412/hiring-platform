@@ -8,7 +8,8 @@ import {
   FormInputNumber,
   FormInputText,
   FormInputTextArea,
-  FormRadioButton
+  FormRadioButton,
+  Loading
 } from '../../components';
 import { useJobStore } from '../../store/jobStore';
 import type { ConfirmationModalProps, JobFormValues } from './types';
@@ -82,7 +83,7 @@ const ConfirmationModal = ({ onClose, onSave }: ConfirmationModalProps) => (
 
 const ModalForm = () => {
   const navigate: NavigateFunction = useNavigate();
-  const { insertJob } = useJobStore();
+  const { insertJob, loading } = useJobStore();
   const [showModalConfirmation, setShowModalConfirmation] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -141,7 +142,6 @@ const ModalForm = () => {
     navigate('/admin');
   };
 
-
   useEffect(() => {
     const formElement = formRef.current;
     if (!formElement) return;
@@ -178,7 +178,7 @@ const ModalForm = () => {
       {showModalConfirmation && (
         <ConfirmationModal onClose={handleClose} onSave={handleSaveAsDraft} />
       )}
-
+      {loading && <Loading text="Loading..." />}
       <div className="bg-white rounded-lg w-[900px] max-h-[90vh] flex flex-col relative">
         <div className="flex flex-row justify-between p-6 border-b border-gray-300 flex-shrink-0">
           <p className="text-lg font-bold text-black">Job Opening</p>
@@ -225,8 +225,8 @@ const ModalForm = () => {
               name="jobDescription"
               value={formik.values.jobDescription}
               onChange={(e) => {
-                const lines = e.target.value.split('\n');
-                formik.setFieldValue('jobDescription', lines);
+
+                formik.setFieldValue('jobDescription', e.target.value);
               }}
               error={formik.errors.jobDescription}
               required

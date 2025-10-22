@@ -1,33 +1,33 @@
-import React, { useEffect, useMemo, useState } from "react";
 import {
-  useReactTable,
+  flexRender,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  flexRender,
+  getSortedRowModel,
+  useReactTable,
   type ColumnDef,
-  type SortingState,
   type ColumnOrderState,
+  type SortingState,
 } from "@tanstack/react-table";
 import {
-  ChevronUp,
   ChevronDown,
   ChevronsUpDown,
+  ChevronUp,
   GripVertical,
-  Search,
-  ChevronRight,
+  Search
 } from "lucide-react";
+import React, { useEffect, useMemo, useState, type ReactElement } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import applicantAvatar from "../../assets/applicantAvatar.png";
-import { useJobStore } from "../../store/jobStore";
-import { Loading } from "../../components";
+import chevron from '../../assets/chevron.png';
 import emptyCandidates from "../../assets/emptyCandidates.png";
+import { Loading } from "../../components";
+import { useJobStore } from "../../store/jobStore";
 
-import type { CandidateRow, ApplicantRow } from "./types";
+import type { ApplicantRow, CandidateRow } from "./types";
 
-const DynamicCandidateTable: React.FC = () => {
+const DynamicCandidateTable = (): ReactElement => {
   const { job_id } = useParams();
   const navigate = useNavigate();
   const { fetchManageJob, applicants, selectedJob, loading, error } = useJobStore();
@@ -97,7 +97,7 @@ const DynamicCandidateTable: React.FC = () => {
         header: "FULL NAME",
         size: 180,
         cell: ({ getValue }) => (
-          <span className="font-medium text-gray-800">{getValue<string>()}</span>
+          <span className="font-medium text-black">{getValue<string>()}</span>
         ),
       },
       { accessorKey: "email", header: "EMAIL", size: 200 },
@@ -115,7 +115,7 @@ const DynamicCandidateTable: React.FC = () => {
               href={link}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline truncate block max-w-[180px]"
+              className="text-teal-600 hover:underline truncate block max-w-[180px]"
             >
               {link}
             </a>
@@ -170,7 +170,7 @@ const DynamicCandidateTable: React.FC = () => {
         <p className="text-lg font-semibold">Something went wrong.</p>
         <button
           onClick={() => fetchManageJob(job_id!)}
-          className="mt-3 px-4 py-2 bg-purple-600 text-white rounded-lg"
+          className="mt-3 px-4 py-2 bg-teal-600 text-white rounded-lg"
         >
           Refresh
         </button>
@@ -199,7 +199,11 @@ const DynamicCandidateTable: React.FC = () => {
             Job List
           </button>
 
-          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <img
+            src={chevron}
+            className="w-4 h-4 text-gray-400"
+            alt="chevron"
+          />
 
           <span
             className="
@@ -237,7 +241,7 @@ const DynamicCandidateTable: React.FC = () => {
       <div className="w-full bg-white min-h-screen rounded-lg">
         <TopBar />
         <PageContainer>
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+          <h2 className="text-lg font-semibold text-black mb-4">
             {selectedJob?.title || "Job Title"}
           </h2>
           <EmptyState />
@@ -250,7 +254,7 @@ const DynamicCandidateTable: React.FC = () => {
     <div className="w-full bg-white min-h-screen rounded-lg">
       <TopBar />
       <PageContainer>
-        <h2 className="text-lg font-semibold text-gray-800 mb-4 mt-4">
+        <h2 className="text-lg font-semibold text-black mb-4 mt-4">
           {selectedJob?.title || "Job Title"}
         </h2>
 

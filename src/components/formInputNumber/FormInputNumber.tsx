@@ -30,6 +30,7 @@ const FormInputAmount = ({
         <span className="font-semibold text-black mr-2">Rp</span>
         <input
           type="text"
+          inputMode="numeric"
           name={name}
           value={formatCurrency(value)}
           placeholder={placeholder}
