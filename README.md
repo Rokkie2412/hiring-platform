@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# 💼 Rakamin Job Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern job board application built with **React + TypeScript + Vite**, integrating **Supabase**, **Zustand**, and **Formik** for smooth state management, form validation, and backend interaction.  
+This project serves as a **frontend assessment challenge** and a showcase of clean, scalable architecture with strong UI/UX fundamentals.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧭 Project Overview
 
-## React Compiler
+**Rakamin Job Board** is a full-featured recruitment management web app where:
+- Admins can **create, manage, and monitor** job listings.
+- Applicants can **browse jobs**, **fill application forms**, and **upload photos** using face detection.
+- Data is stored and managed using **Supabase**.
+- UI is responsive, modern, and optimized for performance with **Vite + React 19**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### ✨ Core Features
+- 🧾 Job listing management (CRUD via Supabase)
+- 🧍 Applicant form with **Formik + Yup** validation
+- 📸 Webcam capture using **React Webcam + Mediapipe Hands**
+- 📊 Candidate table with **Ag-Grid** and **TanStack Table**
+- 🔔 Toast notification system with **React Toastify**
+- 🌍 Routing using **React Router v7**
+- ⚡ State management via **Zustand**
+- 💅 Styled with **TailwindCSS (Vite plugin)**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ⚙️ Tech Stack Used
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Category | Library / Tool | Description |
+|-----------|----------------|--------------|
+| **Framework** | [React 19](https://react.dev/) | Modern UI library |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) | Strong typing support |
+| **Build Tool** | [Vite (Rolldown)](https://vite.dev/) | Super fast bundler & dev server |
+| **State Management** | [Zustand](https://github.com/pmndrs/zustand) | Lightweight and scalable store |
+| **Form Handling** | [Formik](https://formik.org/) + [Yup](https://github.com/jquense/yup) | Form control and validation |
+| **Database / Backend** | [Supabase](https://supabase.io/) | Database, auth, and file storage |
+| **UI Utilities** | [TailwindCSS](https://tailwindcss.com/) | Utility-first CSS framework |
+| **Table & Grid** | [Ag-Grid](https://www.ag-grid.com/) + [TanStack Table](https://tanstack.com/table) | Data table management |
+| **Camera Detection** | [Mediapipe Hands](https://developers.google.com/mediapipe) | Hand tracking and camera utils |
+| **Routing** | [React Router v7](https://reactrouter.com/) | Client-side routing |
+| **Notification** | [React Toastify](https://fkhadra.github.io/react-toastify/) | Custom toast messages |
+| **Linting** | [ESLint](https://eslint.org/) + TypeScript ESLint | Code consistency |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🧑‍💻 How to Run Locally
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/your-username/rakamin-job-board.git
+cd rakamin-job-board
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2️⃣ Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 3️⃣ Set up environment variables
+Create a `.env` file in the root directory and add the following variables:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 4️⃣ Run the development server
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+### 5️⃣ Build for production
+```bash
+npm run build
+# or
+yarn build
+```
+
+### 6️⃣ Run the production server
+```bash
+npm run preview
+# or
+yarn preview
 ```

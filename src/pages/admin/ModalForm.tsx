@@ -58,21 +58,21 @@ const mappingRequirement = (values: JobFormValues): DbRequirementsField[] => {
 };
 
 const ConfirmationModal = ({ onClose, onSave }: ConfirmationModalProps) => (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 text-black">
-    <div className="bg-white rounded-lg w-[400px] max-h-[90vh] flex flex-col relative border-none">
-      <p className="py-6 px-10 text-center font-bold">
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 text-black p-4">
+    <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col relative border-none">
+      <p className="py-6 px-4 sm:px-10 text-center font-bold">
         You are about to close this page. Save current changes as a draft?
       </p>
-      <div className="flex flex-row justify-between p-6 border-t border-gray-300 flex-shrink-0">
+      <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0 p-4 sm:p-6 border-t border-gray-300 flex-shrink-0">
         <button
           onClick={onClose}
-          className="px-6 py-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-teal-600 transition-colors"
+          className="px-4 sm:px-6 py-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-teal-600 transition-colors"
         >
           Close
         </button>
         <button
           onClick={onSave}
-          className="px-6 py-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-teal-600 transition-colors"
+          className="px-4 sm:px-6 py-2 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-teal-600 transition-colors"
         >
           Save as draft
         </button>
@@ -174,13 +174,13 @@ const ModalForm = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       {showModalConfirmation && (
         <ConfirmationModal onClose={handleClose} onSave={handleSaveAsDraft} />
       )}
       {loading && <Loading text="Loading..." />}
-      <div className="bg-white rounded-lg w-[900px] max-h-[90vh] flex flex-col relative">
-        <div className="flex flex-row justify-between p-6 border-b border-gray-300 flex-shrink-0">
+      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] flex flex-col relative">
+        <div className="flex flex-row justify-between p-4 sm:p-6 border-b border-gray-300 flex-shrink-0">
           <p className="text-lg font-bold text-black">Job Opening</p>
           <img
             onClick={() => setShowModalConfirmation(true)}
@@ -191,7 +191,7 @@ const ModalForm = () => {
         </div>
 
         <form onSubmit={formik.handleSubmit} ref={formRef} className="flex flex-col space-y-4 overflow-y-auto">
-          <div className="px-6 space-y-4 mt-4">
+          <div className="px-4 sm:px-6 space-y-4 mt-4">
             <FormInputText
               label="Job Name"
               name="jobName"
@@ -225,7 +225,6 @@ const ModalForm = () => {
               name="jobDescription"
               value={formik.values.jobDescription}
               onChange={(e) => {
-
                 formik.setFieldValue('jobDescription', e.target.value);
               }}
               error={formik.errors.jobDescription}
@@ -244,9 +243,9 @@ const ModalForm = () => {
           </div>
 
           <hr className="border-t border-dashed border-gray-200 my-2" />
-          <p className="text-black text-xs mt-4 px-6">Job Salary</p>
-          <div className="flex flex-row items-start gap-4 px-6">
-            <div className="flex-1">
+          <p className="text-black text-xs mt-4 px-4 sm:px-6">Job Salary</p>
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4 px-4 sm:px-6">
+            <div className="flex-1 w-full">
               <FormInputNumber
                 label="Minimum Estimated Salary"
                 name="salaryMin"
@@ -257,8 +256,8 @@ const ModalForm = () => {
                 placeholder="7.000.000"
               />
             </div>
-            <div className="w-6 h-0.5 bg-gray-300 mt-10" />
-            <div className="flex-1">
+            <div className="hidden sm:block w-6 h-0.5 bg-gray-300 mt-10" />
+            <div className="flex-1 w-full">
               <FormInputNumber
                 label="Maximum Estimated Salary"
                 name="salaryMax"
@@ -272,8 +271,8 @@ const ModalForm = () => {
           </div>
 
           <hr className="border-t border-dashed border-gray-200 my-2" />
-          <p className="px-6 text-black text-sm font-medium mt-4">Minimum Profile Information Required</p>
-          <div className="flex flex-col gap-2 px-6">
+          <p className="px-4 sm:px-6 text-black text-sm font-medium mt-4">Minimum Profile Information Required</p>
+          <div className="flex flex-col gap-2 px-4 sm:px-6">
             {Object.keys(formik.values.requirements).map((key, index) => (
               <div key={key}>
                 <FormRadioButton
@@ -290,7 +289,7 @@ const ModalForm = () => {
             ))}
           </div>
 
-          <div className="p-6 border-t border-gray-300 flex justify-end">
+          <div className="p-4 sm:p-6 border-t border-gray-300 flex justify-end">
             <button type="submit" className="bg-teal-600 text-sm text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-teal-700 transition-colors">
               Publish Job
             </button>

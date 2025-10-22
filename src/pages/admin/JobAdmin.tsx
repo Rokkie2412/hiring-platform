@@ -12,19 +12,19 @@ import type { Job } from "../../types";
 import AddJobModal from "./ModalForm";
 
 const TopBar = () => (
-  <header className="fixed w-full z-50 flex justify-between items-center bg-white px-6 h-16 border-b-2 border-gray-300 shadow-sm">
-    <h1 className="text-lg font-bold text-gray-800">Job List</h1>
+  <header className="fixed w-full z-50 flex justify-between items-center bg-white px-4 sm:px-6 h-14 sm:h-16 border-b-2 border-gray-300 shadow-sm">
+    <h1 className="text-base sm:text-lg font-bold text-gray-800">Job List</h1>
     <img
       src={adminAvatar}
       alt="User Avatar"
-      className="w-10 h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-indigo-300 transition-all"
+      className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-indigo-300 transition-all"
     />
   </header>
 );
 
 const CreateJobBanner = (navigate: NavigateFunction) => (
   <div
-    className="fixed flex flex-col items-center justify-center gap-4 p-6 rounded-2xl text-white overflow-hidden"
+    className="relative flex flex-col items-center justify-center gap-3 sm:gap-4 p-4 sm:p-6 rounded-2xl text-white overflow-hidden min-h-[200px]"
     style={{
       backgroundImage: `url(${buttonBackground})`,
       backgroundSize: "cover",
@@ -32,12 +32,14 @@ const CreateJobBanner = (navigate: NavigateFunction) => (
     }}
   >
     <div className="absolute inset-0 bg-black/65" />
-    <div className="relative z-10 flex flex-col items-center text-center gap-4">
-      <p className="text-2xl font-bold">Recruit the best candidates</p>
-      <p className="text-base font-medium">Create jobs, invite, and hire with ease</p>
+    <div className="relative z-10 flex flex-col items-center text-center gap-3 sm:gap-4">
+      <p className="text-lg sm:text-2xl font-bold">Recruit the best candidates</p>
+      <p className="text-sm sm:text-base font-medium">
+        Create jobs, invite, and hire with ease
+      </p>
       <button
         onClick={() => navigate("/admin/add-job")}
-        className="cursor-pointer bg-[#01777F] font-semibold text-white px-6 py-3 rounded-lg hover:bg-[#01656d] transition-all"
+        className="cursor-pointer bg-[#01777F] font-semibold text-white px-5 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-[#01656d] transition-all text-sm sm:text-base"
       >
         Create a new job
       </button>
@@ -46,21 +48,26 @@ const CreateJobBanner = (navigate: NavigateFunction) => (
 );
 
 const JobListCard = (job: Job, navigate: NavigateFunction, setSelectedJob: (job: Job) => void) => (
-  <div className="flex flex-col mb-3 w-full bg-white p-6 gap-4 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.09)] transition-shadow duration-200">
-    <div className="flex flex-row w-full items-center gap-3">
+  <div className="flex flex-col mb-3 w-full bg-white p-4 sm:p-6 gap-3 sm:gap-4 rounded-2xl shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.09)] transition-shadow duration-200">
+    <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-3">
       {job.list_card?.badge && <StatusBadge type={job.list_card.badge.toLowerCase()} />}
-      <p className="text-black py-1 px-4 border border-gray-300 rounded-md text-sm">
+      <p className="text-black py-1 px-3 border border-gray-300 rounded-md text-xs sm:text-sm">
         {job.list_card?.started_on_text || ""}
       </p>
     </div>
-    <p className="text-black font-bold text-lg">{job.title}</p>
-    <div className="flex flex-row items-center justify-between w-full">
-      <p className="text-gray-700 text-base">{job.salary_range?.display_text}</p>
-      <button onClick={() => {
-        setSelectedJob(job)
-        navigate(`/admin/manage-job/${job.id}`)
-      }} className="bg-[#01777F] font-semibold text-white px-4 py-2 rounded-md hover:bg-[#01656d] transition-colors cursor-pointer">
-        {job.list_card?.cta || ""}
+    <p className="text-black font-bold text-base sm:text-lg">{job.title}</p>
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
+      <p className="text-gray-700 text-sm sm:text-base">
+        {job.salary_range?.display_text}
+      </p>
+      <button
+        onClick={() => {
+          setSelectedJob(job);
+          navigate(`/admin/manage-job/${job.id}`);
+        }}
+        className="bg-[#01777F] font-semibold text-white px-4 py-2 rounded-md hover:bg-[#01656d] transition-colors cursor-pointer text-sm sm:text-base"
+      >
+        {job.list_card?.cta || "View"}
       </button>
     </div>
   </div>
@@ -75,19 +82,19 @@ const EmptyJobList = (
 ): ReactNode => {
   if (jobs.length === 0 && !loading && !error) {
     return (
-      <div className="p-6 bg-white w-full h-full flex flex-col justify-center items-center">
-        <img src={emptyState} className="w-72 mb-4" alt="Empty state" />
-        <p className="text-xl font-bold text-black mb-2">
+      <div className="p-4 sm:p-6 bg-white w-full flex flex-col justify-center items-center text-center">
+        <img src={emptyState} className="w-48 sm:w-72 mb-3 sm:mb-4" alt="Empty state" />
+        <p className="text-lg sm:text-xl font-bold text-black mb-1 sm:mb-2">
           {searchTerm ? "No jobs match your search" : "No job openings available"}
         </p>
         {!searchTerm && (
           <>
-            <p className="text-black text-base mb-4">
+            <p className="text-black text-sm sm:text-base mb-3 sm:mb-4">
               Create a job opening now and start the candidate process.
             </p>
             <button
               onClick={() => navigate("/admin/add-job")}
-              className="bg-yellow-500 text-black font-bold text-base px-4 py-2 rounded-lg cursor-pointer"
+              className="bg-yellow-500 text-black font-bold text-sm sm:text-base px-4 py-2 rounded-lg cursor-pointer"
             >
               Create a new job
             </button>
@@ -96,7 +103,6 @@ const EmptyJobList = (
       </div>
     );
   }
-
   return null;
 };
 
@@ -117,7 +123,6 @@ const JobAdmin = () => {
     fetchJobs();
   }, [fetchJobs]);
 
-  // ✅ Filtering logic (case-insensitive)
   const filteredJobs = useMemo(() => {
     if (!searchTerm.trim()) return jobs;
     const lower = searchTerm.toLowerCase();
@@ -131,44 +136,49 @@ const JobAdmin = () => {
   }, [searchTerm, jobs]);
 
   return (
-    <div className="flex flex-col bg-white w-full h-full max-h-dvh scrollbar-custom">
+    <div className="flex flex-col bg-gray-50 min-h-screen w-full">
       <TopBar />
       {LoadingState(loading)}
-      <div className="flex flex-row bg-white w-full h-full mt-20 pr-5">
-        {/* Left Side */}
-        <div className="w-3/4 h-full mr-3 bg-white">
-          <div className="fixed bg-transparent w-3/4 px-5 z-40">
-            <span className="w-full flex flex-row gap-4 border-2 py-2.5 px-4 rounded-lg bg-white border-gray-300">
+
+      <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 mt-20 px-4 sm:px-6 pb-8">
+        {/* LEFT SIDE */}
+        <div className="flex-1">
+          {/* Search bar */}
+          <div className="sticky top-16 bg-gray-50 z-40 mb-5">
+            <span className="w-full flex flex-row gap-2 sm:gap-4 border py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-white border-gray-300 shadow-sm">
               <input
                 ref={inputRef}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full text-black outline-none"
+                className="w-full text-black outline-none text-sm sm:text-base"
                 placeholder="Search by job title, company, or salary"
               />
               <img
                 onClick={() => inputRef.current?.focus()}
-                className="w-6 h-6 cursor-pointer"
+                className="w-5 h-5 sm:w-6 sm:h-6 cursor-pointer"
                 src={searchIcon}
                 alt="Search"
               />
             </span>
           </div>
 
-          <div className="mt-20">
+          {/* Job list */}
+          <div className="flex flex-col gap-3 sm:gap-4">
             {EmptyJobList(filteredJobs, loading, navigate, error, searchTerm)}
             {!loading && !error && filteredJobs.length > 0 && (
-              <div className="flex flex-col w-full gap-4 max-h-[calc(100vh-140px)] mx-5 pr-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                 {filteredJobs.map((job: Job) => (
-                  JobListCard(job, navigate, setSelectedJob)
+                  <div key={job.id}>{JobListCard(job, navigate, setSelectedJob)}</div>
                 ))}
               </div>
             )}
           </div>
         </div>
 
-        {/* Right Side */}
-        <div className="w-1/4 ml-3">{CreateJobBanner(navigate)}</div>
+        {/* RIGHT SIDE */}
+        <div className="lg:w-[30%] xl:w-[25%] w-full">
+          {CreateJobBanner(navigate)}
+        </div>
       </div>
 
       {showCreateModal && <AddJobModal />}

@@ -18,6 +18,15 @@ const formatCreatedAt = (dateInput?: string | Date): string => {
   });
 };
 
+const formatIDRCurrency = (num: string | number): string => {
+  const digits = String(num).replace(/\D/g, "");
+  if (!digits) return "0";
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(Number(digits));
+};
 
 export const useJobStore = create<JobStore>((set) => ({
   photoTemp: '',
@@ -83,7 +92,7 @@ export const useJobStore = create<JobStore>((set) => ({
               max: value.salaryMax,
               min: value.salaryMin,
               currency: "IDR",
-              display_text: `Rp${value.salaryMin} - Rp${value.salaryMax}`
+              display_text: `${formatIDRCurrency(value.salaryMin)} - ${formatIDRCurrency(value.salaryMax)}`,
             },
             list_card: {
               cta: "Manage Job",

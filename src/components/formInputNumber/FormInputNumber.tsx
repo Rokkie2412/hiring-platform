@@ -1,11 +1,11 @@
 import { type ReactElement } from "react";
-
 import type { FormInputAmountProps } from "./types";
 
-const formatCurrency = (num: string | number): string => {
-  const str = num?.toString().replace(/[^\d]/g, "") || "";
-  if (!str) return "";
-  return str.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const formatCurrency = (value: string | number): string => {
+  if (!value) return "";
+  const digits = String(value).replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
 const FormInputAmount = ({
@@ -17,6 +17,15 @@ const FormInputAmount = ({
   required = false,
   placeholder = "",
 }: FormInputAmountProps): ReactElement => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // hanya izinkan angka
+    const raw = e.target.value.replace(/\D/g, "");
+    onChange({
+      ...e,
+      target: { ...e.target, name, value: raw },
+    } as unknown as React.ChangeEvent<HTMLInputElement>);
+  };
+
   return (
     <span className="flex flex-col w-full text-black">
       {label && (
@@ -32,10 +41,11 @@ const FormInputAmount = ({
           type="text"
           inputMode="numeric"
           name={name}
-          value={formatCurrency(value)}
+          value={formatCurrency(value)} // tampilkan 9.000.000
           placeholder={placeholder}
-          onChange={onChange}
+          onChange={handleChange}
           className="text-sm flex-1 outline-none bg-transparent"
+          autoComplete="off"
         />
       </div>
 

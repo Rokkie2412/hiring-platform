@@ -1,6 +1,5 @@
 import * as Yup from 'yup';
 
-// Options for jobType, so validation can use the same values
 const jobTypeOptions = [
   { value: 'Full-Time', label: 'Full-time' },
   { value: 'Contract', label: 'Contract' },
@@ -9,7 +8,14 @@ const jobTypeOptions = [
   { value: 'Freelance', label: 'Freelance' },
 ];
 
-// Create a validation schema using Yup
+const asNumber = (v: unknown, ov: unknown) => {
+  if (typeof ov === "string") {
+    const digits = ov.replace(/\D/g, "");
+    return digits ? Number(digits) : NaN;
+  }
+  return v;
+};
+
 export const jobValidationSchema = Yup.object().shape({
   jobName: Yup.string()
     .required('Job name is a required field')
@@ -34,8 +40,16 @@ export const jobValidationSchema = Yup.object().shape({
     .positive('Number of candidates must be greater than 0')
     .max(100, 'Number of candidates must be 100 or less'),
 
-  salaryMin: Yup.string()
-    .required('Minimum salary is a required field'),
-  salaryMax: Yup.string()
-    .required('Maximum salary is a required field')
+    salaryMin: Yup.number()
+    .transform(asNumber)
+    .required("Minimum salary is a required field")
+    .typeError("Minimum salary must be a number")
+    .positive("Minimum salary must be greater than 0"),
+  
+  salaryMax: Yup.number()
+    .transform(asNumber)
+    .required("Maximum salary is a required field")
+    .typeError("Maximum salary must be a number")
+    .positive("Maximum salary must be greater than 0")
+    .moreThan(Yup.ref("salaryMin"), "Maximum salary must be greater than minimum salary"),
 });
