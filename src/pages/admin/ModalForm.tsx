@@ -208,7 +208,7 @@ const ModalForm = () => {
               onChange={(e) => formik.setFieldValue('company_name', e.target.value)}
               error={formik.errors.company_name}
               required
-              placeholder="Ex. Front End Engineer"
+              placeholder="Ex. Rakamin"
             />
             <FormDropdown
               options={jobTypeOptions}
