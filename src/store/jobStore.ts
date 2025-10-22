@@ -162,7 +162,7 @@ export const useJobStore = create<JobStore>((set) => ({
   
       set(() => ({ loading: false }));
 
-      showSuccessToast();
+      showSuccessToast("Job successfully applied");
       
     } catch (err) {
       showErrorToast();
