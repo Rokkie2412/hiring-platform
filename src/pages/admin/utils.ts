@@ -27,7 +27,6 @@ export const jobValidationSchema = Yup.object().shape({
     .max(100, "Company name must be at most 100 characters"),
   jobType: Yup.string()
     .required('Job type is a required field')
-    // Ensure the selected value is one of the available options
     .oneOf(jobTypeOptions.map(option => option.value), 'Please select a valid job type'),
   jobDescription: Yup.string()
     .required("Job description is a required field")
@@ -39,13 +38,12 @@ export const jobValidationSchema = Yup.object().shape({
     .integer('Number of candidates must be an integer')
     .positive('Number of candidates must be greater than 0')
     .max(100, 'Number of candidates must be 100 or less'),
-
     salaryMin: Yup.number()
     .transform(asNumber)
     .required("Minimum salary is a required field")
     .typeError("Minimum salary must be a number")
     .positive("Minimum salary must be greater than 0"),
-  
+
   salaryMax: Yup.number()
     .transform(asNumber)
     .required("Maximum salary is a required field")

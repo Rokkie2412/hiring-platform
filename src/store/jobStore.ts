@@ -122,8 +122,6 @@ export const useJobStore = create<JobStore>((set) => ({
       }));
 
       showSuccessToast();
-
-      // return jobData;
     } catch (err) {
       showErrorToast()
       const message = err instanceof Error ? err.message : "Failed to insert job";

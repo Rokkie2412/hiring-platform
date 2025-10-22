@@ -165,20 +165,16 @@ const CapturePhotoModal = ({ setter }: { setter: (value: boolean) => void }) => 
     const labelWidth = textMetrics.width + paddingX * 2;
     const labelHeight = fontSize + paddingY * 2;
 
-    // posisi label: sedikit di atas kiri bounding box
     const labelX = boxX;
     const labelY = boxY - labelHeight;
 
-    // background label
     ctx.fillStyle = poseNumber < 1 ? "#E11428" : "#008343";
     ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
 
-    // border putih di luar
     ctx.strokeStyle = poseNumber < 1 ? "#E11428" : "#008343";
     ctx.lineWidth = 2;
     ctx.strokeRect(labelX, labelY, labelWidth, labelHeight);
 
-    // teks putih di tengah
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText(labelText, labelX + paddingX, labelY + labelHeight / 2);
   };

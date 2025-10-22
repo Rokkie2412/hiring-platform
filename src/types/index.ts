@@ -131,12 +131,12 @@ export interface ApplicantProfile {
   };
   gender: {
     label: 'Gender';
-    value: 'Female' | 'Male' | string; // sesuaikan jika perlu strict
+    value: 'Female' | 'Male' | string;
     order: 5;
   };
   linkedin_link: {
     label: 'LinkedIn';
-    value: string; // URL string
+    value: string;
     order: 6;
   };
 }

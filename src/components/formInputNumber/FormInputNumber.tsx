@@ -18,7 +18,6 @@ const FormInputAmount = ({
   placeholder = "",
 }: FormInputAmountProps): ReactElement => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // hanya izinkan angka
     const raw = e.target.value.replace(/\D/g, "");
     onChange({
       ...e,
@@ -41,7 +40,7 @@ const FormInputAmount = ({
           type="text"
           inputMode="numeric"
           name={name}
-          value={formatCurrency(value)} // tampilkan 9.000.000
+          value={formatCurrency(value)}
           placeholder={placeholder}
           onChange={handleChange}
           className="text-sm flex-1 outline-none bg-transparent"
