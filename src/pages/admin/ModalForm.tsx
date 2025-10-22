@@ -113,7 +113,7 @@ const ModalForm = () => {
     validateOnChange: false,
     onSubmit: async (values) => {
       const field = mappingRequirement(values);
-      await insertJobForm(values, 'Active', field, navigate)();
+      await insertJobForm(values, 'Active', field)();
     },
   });
 
@@ -121,11 +121,10 @@ const ModalForm = () => {
     values: JobFormValues,
     status: 'Active' | 'Draft' | 'Inactive',
     field: DbRequirementsField[],
-    navigate: NavigateFunction
   ) => async () => {
     try {
       await insertJob(values, status, field);
-      navigate('/admin', { replace: true });
+      setTimeout(() => window.location.href = "/admin", 1000);
     } catch (error) {
       console.error('Failed to insert job:', error);
     }
@@ -137,9 +136,9 @@ const ModalForm = () => {
   };
 
   const handleSaveAsDraft = () => {
-    insertJobForm(formik.values, 'Draft', mappingRequirement(formik.values), navigate)();
+    insertJobForm(formik.values, 'Draft', mappingRequirement(formik.values))();
     setShowModalConfirmation(false);
-    navigate('/admin');
+    setTimeout(() => window.location.href = "/admin", 1000);
   };
 
   useEffect(() => {
