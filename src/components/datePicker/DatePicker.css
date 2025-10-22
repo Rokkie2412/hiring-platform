@@ -1,77 +1,67 @@
-/* --- Gaya Umum Pop-up Kalender --- */
 .react-datepicker-popper {
-  z-index: 50; /* Pastikan kalender muncul di atas elemen lain */
+  z-index: 50;
 }
 
 .react-datepicker {
-  font-family: inherit; /* Gunakan font yang sama dengan aplikasi Anda */
+  font-family: inherit;
   background-color: #ffffff;
-  border: 1px solid #e5e7eb; /* Border abu-abu muda */
-  border-radius: 0.5rem; /* Sudut membulat */
-  padding: 0.5rem; /* Padding di dalam kalender */
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* Bayangan halus */
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* --- Header Kalender (Bulan & Tahun) --- */
 .react-datepicker__header {
-  background-color: transparent; /* Hapus warna latar bawaan */
-  border-bottom: 1px solid #e5e7eb; /* Garis pemisah di bawah header */
+  background-color: transparent;
+  border-bottom: 1px solid #e5e7eb;
   padding: 0.5rem 0;
   position: relative;
 }
 
-/* --- Nama Hari (S, M, T, W, T, F, S) --- */
 .react-datepicker__day-name {
-  color: #6b7280; /* Warna abu-abu */
-  font-size: 0.75rem; /* Ukuran font kecil (text-xs) */
-  font-weight: 500; /* Ketebalan font medium */
-  margin: 0.25rem; /* Jarak antar hari */
-  width: 1.75rem; /* Lebar tetap untuk rata */
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0.25rem;
+  width: 1.75rem;
   line-height: 1.75rem;
   text-align: center;
 }
 
-/* --- Grid Hari --- */
 .react-datepicker__month {
-  margin: 0; /* Hapus margin default */
+  margin: 0;
 }
 
-/* --- Gaya untuk Setiap Hari --- */
 .react-datepicker__day {
-  color: #111827; /* Warna hitam/abu-abu gelap */
-  width: 2rem; /* Ukuran kotak hari */
+  color: #111827;
+  width: 2rem;
   height: 2rem;
-  margin: 0.125rem; /* Jarak kecil */
-  border-radius: 9999px; /* Bentuk lingkaran penuh */
-  line-height: 2rem; /* Pusatkan teks vertikal */
+  margin: 0.125rem;
+  border-radius: 9999px;
+  line-height: 2rem;
   text-align: center;
 }
 
-/* --- Hari di Luar Bulan Aktif (misal 31 Des di tampilan Jan) --- */
 .react-datepicker__day--outside-month {
-  color: #d1d5db; /* Warna abu-abu sangat muda */
-  pointer-events: none; /* Tidak bisa diklik */
+  color: #d1d5db;
+  pointer-events: none;
 }
 
-/* --- Hari Ini (Hari ini, bukan yang dipilih) --- */
 .react-datepicker__day--today {
-  font-weight: 600; /* Tebalkan font hari ini */
-  color: #01959F; /* Warna oranye */
+  font-weight: 600;
+  color: #01959F;
 }
 
-/* --- Hari yang Dipilih --- */
 .react-datepicker__day--selected {
-  background-color: #01959F; /* Latar belakang oranye */
-  color: #ffffff; /* Teks putih */
+  background-color: #01959F;
+  color: #ffffff;
   font-weight: 600;
 }
 
-/* --- Efek Hover pada Hari --- */
 .react-datepicker__day:hover:not(.react-datepicker__day--outside-month) {
-  background-color: #01959F; /* Latar belakang oranye muda saat hover */
+  background-color: #01959F;
 }
 
-/* --- Nonaktifkan hover pada hari yang sudah dipilih --- */
 .react-datepicker__day--selected:hover {
   background-color: #01959F;
 }

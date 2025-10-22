@@ -141,9 +141,7 @@ const JobAdmin = () => {
       {LoadingState(loading)}
 
       <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 mt-20 px-4 sm:px-6 pb-8">
-        {/* LEFT SIDE */}
         <div className="flex-1">
-          {/* Search bar */}
           <div className="sticky top-16 bg-gray-50 z-40 mb-5">
             <span className="w-full flex flex-row gap-2 sm:gap-4 border py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg bg-white border-gray-300 shadow-sm">
               <input
@@ -161,8 +159,6 @@ const JobAdmin = () => {
               />
             </span>
           </div>
-
-          {/* Job list - Changed to flex column for all screen sizes */}
           <div className="flex flex-col gap-3 sm:gap-4">
             {EmptyJobList(filteredJobs, loading, navigate, error, searchTerm)}
             {!loading && !error && filteredJobs.length > 0 && (
@@ -174,8 +170,6 @@ const JobAdmin = () => {
             )}
           </div>
         </div>
-
-        {/* RIGHT SIDE */}
         <div className="lg:w-[30%] xl:w-[25%] w-full">
           {CreateJobBanner(navigate)}
         </div>
