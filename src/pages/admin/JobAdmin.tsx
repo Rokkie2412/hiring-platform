@@ -162,11 +162,11 @@ const JobAdmin = () => {
             </span>
           </div>
 
-          {/* Job list */}
+          {/* Job list - Changed to flex column for all screen sizes */}
           <div className="flex flex-col gap-3 sm:gap-4">
             {EmptyJobList(filteredJobs, loading, navigate, error, searchTerm)}
             {!loading && !error && filteredJobs.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-4">
                 {filteredJobs.map((job: Job) => (
                   <div key={job.id}>{JobListCard(job, navigate, setSelectedJob)}</div>
                 ))}
